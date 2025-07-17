@@ -53,3 +53,28 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+
+# STM32CubeIDE Build and Project Files
+*.launch
+*.bin
+*.elf
+*.hex
+*.map
+*.o
+*.d
+*.i
+
+# Build output directories
+/Debug/
+/Release/
+
+# IDE project files
+/.settings/
+/.metadata/
+/.project
+/.cproject
+*.log
+*.bak
+*.tmp
+*.swp
