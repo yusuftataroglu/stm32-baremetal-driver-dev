@@ -1,9 +1,16 @@
-/*
- * stm32f103xx.h
+/******************************************************************************
+ * @file    stm32f103xx.h
+ * @author  Yusuf
+ * @brief   STM32F103RB device-specific register definitions (bare-metal)
  *
- *  Created on: Jul 17, 2025
- *      Author: yusuf
- */
+ * @note    This file contains macro definitions and base addresses
+ *          for RCC, GPIO, and other peripherals of the STM32F103RB MCU.
+ *          It serves as the foundational header for all peripheral drivers,
+ *          written from scratch without using HAL or CMSIS layers.
+ *
+ * @details This file is designed for educational purposes and to showcase
+ *          low-level register access in embedded systems development.
+ ******************************************************************************/
 
 #ifndef CUSTOMDRIVERS_INC_STM32F103XX_H_
 #define CUSTOMDRIVERS_INC_STM32F103XX_H_
