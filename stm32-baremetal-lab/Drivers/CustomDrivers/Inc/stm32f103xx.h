@@ -90,6 +90,44 @@ typedef struct
 #define GPIOA 	((GPIO_RegDef_t*) GPIOA_BASEADDR)
 #define GPIOB   ((GPIO_RegDef_t*) GPIOB_BASEADDR)
 #define GPIOC   ((GPIO_RegDef_t*) GPIOC_BASEADDR)
-#define RCC     ((RCC_RegDef_t*) RCC_BASEADDR)
+#define RCC     ((RCC_RegDef_t*)  RCC_BASEADDR)
+
+/******************************** RCC PERIPHERAL CLOCK ENABLE MACROS ********************************/
+
+#define GPIOA_PCLK_EN()     (RCC->APB2ENR |= (1 << 2))   /* Enable clock for GPIOA */
+#define GPIOB_PCLK_EN()     (RCC->APB2ENR |= (1 << 3))   /* Enable clock for GPIOB */
+#define GPIOC_PCLK_EN()     (RCC->APB2ENR |= (1 << 4))   /* Enable clock for GPIOC */
+
+#define AFIO_PCLK_EN()      (RCC->APB2ENR |= (1 << 0))   /* Enable clock for AFIO */
+
+#define USART1_PCLK_EN()    (RCC->APB2ENR |= (1 << 14))  /* Enable clock for USART1 (on APB2) */
+#define USART2_PCLK_EN()    (RCC->APB1ENR |= (1 << 17))  /* Enable clock for USART2 (on APB1) */
+#define USART3_PCLK_EN()    (RCC->APB1ENR |= (1 << 18))  /* Enable clock for USART3 (on APB1) */
+#define UART4_PCLK_EN()    	(RCC->APB1ENR |= (1 << 19))  /* Enable clock for UART4 (on APB1) */
+#define UART5_PCLK_EN()    	(RCC->APB1ENR |= (1 << 20))  /* Enable clock for UART5 (on APB1) */
+
+#define SPI1_PCLK_EN()      (RCC->APB2ENR |= (1 << 12))  /* Enable clock for SPI1 */
+
+#define I2C1_PCLK_EN()      (RCC->APB1ENR |= (1 << 21))  /* Enable clock for I2C1 */
+#define I2C2_PCLK_EN()      (RCC->APB1ENR |= (1 << 22))  /* Enable clock for I2C2 */
+
+/******************************** RCC PERIPHERAL CLOCK DISABLE MACROS ********************************/
+
+#define GPIOA_PCLK_DI()     (RCC->APB2ENR &= ~(1 << 2))   /* Disable clock for GPIOA */
+#define GPIOB_PCLK_DI()     (RCC->APB2ENR &= ~(1 << 3))   /* Disable clock for GPIOB */
+#define GPIOC_PCLK_DI()     (RCC->APB2ENR &= ~(1 << 4))   /* Disable clock for GPIOC */
+
+#define AFIO_PCLK_DI()      (RCC->APB2ENR &= ~(1 << 0))   /* Disable clock for AFIO */
+
+#define USART1_PCLK_DI()    (RCC->APB2ENR &= ~(1 << 14))  /* Disable clock for USART1 (on APB2) */
+#define USART2_PCLK_DI()    (RCC->APB1ENR &= ~(1 << 17))  /* Disable clock for USART2 (on APB1) */
+#define USART3_PCLK_DI()    (RCC->APB1ENR &= ~(1 << 18))  /* Disable clock for USART3 (on APB1) */
+#define UART4_PCLK_DI()    	(RCC->APB1ENR &= ~(1 << 19))  /* Disable clock for UART4 (on APB1) */
+#define UART5_PCLK_DI()    	(RCC->APB1ENR &= ~(1 << 20))  /* Disable clock for UART5 (on APB1) */
+
+#define SPI1_PCLK_DI()      (RCC->APB2ENR &= ~(1 << 12))  /* Disable clock for SPI1 */
+
+#define I2C1_PCLK_DI()      (RCC->APB1ENR &= ~(1 << 21))  /* Disable clock for I2C1 */
+#define I2C2_PCLK_DI()      (RCC->APB1ENR &= ~(1 << 22))  /* Disable clock for I2C2 */
 
 #endif /* CUSTOMDRIVERS_INC_STM32F103XX_H_ */
