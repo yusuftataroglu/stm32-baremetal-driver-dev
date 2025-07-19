@@ -18,8 +18,9 @@
 #include <stdint.h>
 
 /********************************** START: Processor Specific Details **********************************/
-#define __vo    volatile
-
+#define __vo    	volatile
+#define ENABLE		1
+#define DISABLE 	0
 /********************************** BASE ADDRESSES OF FLASH AND SRAM **********************************/
 #define FLASH_BASEADDR          0x08000000U
 #define SRAM_BASEADDR           0x20000000U
