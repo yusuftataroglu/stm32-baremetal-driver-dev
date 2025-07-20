@@ -7,9 +7,13 @@
 
 #include "stm32f103xx_gpio_driver.h"
 
-void GPIO_PeriClockControl(GPIO_RegDef_t *GPIOx, uint8_t EnorDi)
+static void GPIO_ConfigMode(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
+static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
+static void GPIO_ConfigPuPd(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
+
+void GPIO_PeriClockControl(GPIO_RegDef_t *GPIOx, uint8_t enorDi)
 {
-	if (EnorDi == 1)
+	if (enorDi == 1)
 	{
 		switch ((uint32_t) GPIOx)
 		{
@@ -62,41 +66,75 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 
 void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
 {
-
+	if (pGPIOx == GPIOA)
+	{
+		RCC->APB2RSTR |= (1 << 2);
+		RCC->APB2RSTR &= ~(1 << 2);
+	}
+	else if (pGPIOx == GPIOB)
+	{
+		RCC->APB2RSTR |= (1 << 3);
+		RCC->APB2RSTR &= ~(1 << 3);
+	}
+	else if (pGPIOx == GPIOC)
+	{
+		RCC->APB2RSTR |= (1 << 4);
+		RCC->APB2RSTR &= ~(1 << 4);
+	}
 }
 
-uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx, uint8_t pinNumber)
+uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx, GPIO_PinNumber_t pinNumber)
 {
-	return 0;
+	return (uint8_t) ((pGPIOx->IDR >> pinNumber) & 0x1);
 }
 
 uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx)
 {
-	return 0;
+	return (uint16_t) pGPIOx->IDR;
 }
 
-void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber,
-		uint8_t Value)
+void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, GPIO_PinNumber_t pinNumber, uint8_t value)
 {
-
+	if (value == ENABLE)
+		pGPIOx->ODR |= (1 << pinNumber);
+	else
+		pGPIOx->ODR &= ~(1 << pinNumber);
 }
 
 void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t value)
 {
-
+	pGPIOx->ODR = value;
 }
 
-void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t pinNumber)
+void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, GPIO_PinNumber_t pinNumber)
 {
-
+	pGPIOx->ODR ^= (1 << pinNumber);
 }
 
+/**
+ * @brief  Configures the mode and configuration (CNF) bits of a given GPIO pin.
+ *
+ * This function sets the MODE[1:0] and CNF[1:0] bits located in the GPIO port’s
+ * CRL or CRH register, depending on the pin number (0–7 → CRL, 8–15 → CRH).
+ * It interprets the desired mode from the GPIO_PinConfig_t structure
+ * and applies the appropriate 4-bit configuration for the selected pin.
+ *
+ * @note
+ * - Output mode defaults to 10 MHz speed. To configure other speeds, call GPIO_ConfigSpeed() separately.
+ * - For interrupt modes (e.g., GPIO_MODE_IT_FT), only the pin configuration is applied here.
+ *   The EXTI/AFIO configuration must be handled by another function (e.g., GPIO_ConfigInterrupt()).
+ *
+ * @param[in] pGPIOx     Pointer to the GPIO port base address (e.g., GPIOA, GPIOB).
+ * @param[in] pPinConfig Pointer to the user-defined configuration structure for the pin.
+ *
+ * @return None
+ */
 static void GPIO_ConfigMode(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
 {
 	uint32_t pinNumber = pPinConfig->GPIO_PinNumber;
 	uint32_t mode = 0;
 	uint32_t cnf = 0;
-	uint32_t shiftAmount = (pinNumber % 8) * 4;// Her pin için 4 bit
+	uint32_t shiftAmount = (pinNumber % 8) * 4;
 
 	volatile uint32_t *pConfigReg;
 
@@ -105,12 +143,15 @@ static void GPIO_ConfigMode(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
 	else
 		pConfigReg = &pGPIOx->CRH;
 
-// MODE ve CNF değerlerini belirle
 	switch (pPinConfig->GPIO_PinMode)
 	{
 	case GPIO_MODE_INPUT:
 		mode = 0x0;
 		cnf = 0x1;// Input floating
+		break;
+	case GPIO_MODE_INPUT_PU_PD:
+		mode = 0x0;
+		cnf = 0x2;
 		break;
 	case GPIO_MODE_ANALOG:
 		mode = 0x0;
@@ -136,22 +177,30 @@ static void GPIO_ConfigMode(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
 	case GPIO_MODE_IT_RT:
 	case GPIO_MODE_IT_RFT:
 		mode = 0x0;
-		cnf = 0x1;// Input floating, EXTI ayrıca yapılandırılacak
+		cnf = 0x1;
 		break;
 	default:
-// Geçersiz mod → burada hata loglanabilir
 		return;
 	}
-
-// Eski 4 biti temizle
 	*pConfigReg &= ~(0xF << shiftAmount);
-
-// Yeni değeri yaz
 	*pConfigReg |= ((cnf << 2) | mode) << shiftAmount;
 }
 
-static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx,
-		GPIO_PinConfig_t *pPinConfig)
+/**
+ * @brief  Configures the output speed for the given GPIO pin.
+ *
+ * This function sets the MODE[1:0] bits in CRL or CRH to control
+ * the switching speed of an output or alternate function pin.
+ *
+ * @note   Only valid for output and alternate function modes.
+ *         This function does nothing for input mode pins.
+ *
+ * @param  pGPIOx: Pointer to the GPIO port base address
+ * @param  pPinConfig: Pointer to the pin configuration structure
+ *
+ * @return None
+ */
+static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
 {
 	uint32_t pinNumber = pPinConfig->GPIO_PinNumber;
 	uint32_t shiftAmount = (pinNumber % 8) * 4;
@@ -191,6 +240,19 @@ static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx,
 	}
 }
 
+/**
+ * @brief Configures the pull-up or pull-down resistor for a GPIO pin.
+ *
+ * Only applicable for input mode with pull-up/pull-down configuration (GPIO_MODE_INPUT_PU_PD).
+ * Uses the ODR register to enable internal pull-up or pull-down resistors:
+ * - ODR bit set   → Pull-up
+ * - ODR bit clear → Pull-down
+ *
+ * @param pGPIOx Pointer to GPIO peripheral base address.
+ * @param pPinConfig Pointer to GPIO pin configuration structure.
+ *
+ * @return None
+ */
 static void GPIO_ConfigPuPd(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
 {
 	uint32_t pinNumber = pPinConfig->GPIO_PinNumber;

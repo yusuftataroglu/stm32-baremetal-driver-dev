@@ -126,7 +126,7 @@ typedef struct
  *
  * @return None
  */
-void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t EnorDi);
+void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t enorDi);
 
 /**
  * @brief  Initializes the specified GPIO pin based on user configuration.
@@ -164,7 +164,7 @@ void GPIO_DeInit(GPIO_RegDef_t *pGPIOx);
  *
  * @return uint8_t      Logic level (0 or 1)
  */
-uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
+uint8_t GPIO_ReadFromInputPin(GPIO_RegDef_t *pGPIOx, GPIO_PinNumber_t pinNumber);
 
 /**
  * @brief  Reads the entire input value of a GPIO port.
@@ -190,8 +190,7 @@ uint16_t GPIO_ReadFromInputPort(GPIO_RegDef_t *pGPIOx);
  *
  * @return None
  */
-void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber,
-		uint8_t Value);
+void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, GPIO_PinNumber_t pinNumber, uint8_t value);
 
 /**
  * @brief  Writes a 16-bit value to the entire GPIO output port.
@@ -204,7 +203,7 @@ void GPIO_WriteToOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber,
  *
  * @return None
  */
-void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value);
+void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t value);
 
 /**
  * @brief  Toggles the current output state of the specified GPIO pin.
@@ -216,58 +215,6 @@ void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t Value);
  *
  * @return None
  */
-void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);
-
-/**
- * @brief  Configures the mode and configuration (CNF) bits of a given GPIO pin.
- *
- * This function sets the MODE[1:0] and CNF[1:0] bits located in the GPIO port’s
- * CRL or CRH register, depending on the pin number (0–7 → CRL, 8–15 → CRH).
- * It interprets the desired mode from the GPIO_PinConfig_t structure
- * and applies the appropriate 4-bit configuration for the selected pin.
- *
- * @note
- * - Output mode defaults to 10 MHz speed. To configure other speeds, call GPIO_ConfigSpeed() separately.
- * - For interrupt modes (e.g., GPIO_MODE_IT_FT), only the pin configuration is applied here.
- *   The EXTI/AFIO configuration must be handled by another function (e.g., GPIO_ConfigInterrupt()).
- *
- * @param[in] pGPIOx     Pointer to the GPIO port base address (e.g., GPIOA, GPIOB).
- * @param[in] pPinConfig Pointer to the user-defined configuration structure for the pin.
- *
- * @return None
- */
-
-static void GPIO_ConfigMode(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
-
-/**
- * @brief  Configures the output speed for the given GPIO pin.
- *
- * This function sets the MODE[1:0] bits in CRL or CRH to control
- * the switching speed of an output or alternate function pin.
- *
- * @note   Only valid for output and alternate function modes.
- *         This function does nothing for input mode pins.
- *
- * @param  pGPIOx: Pointer to the GPIO port base address
- * @param  pPinConfig: Pointer to the pin configuration structure
- *
- * @return None
- */
-static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
-
-/**
- * @brief Configures the pull-up or pull-down resistor for a GPIO pin.
- *
- * Only applicable for input mode with pull-up/pull-down configuration (GPIO_MODE_INPUT_PU_PD).
- * Uses the ODR register to enable internal pull-up or pull-down resistors:
- * - ODR bit set   → Pull-up
- * - ODR bit clear → Pull-down
- *
- * @param pGPIOx Pointer to GPIO peripheral base address.
- * @param pPinConfig Pointer to GPIO pin configuration structure.
- *
- * @return None
- */
-static void GPIO_ConfigPuPd(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
+void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, GPIO_PinNumber_t pinNumber);
 
 #endif /* CUSTOMDRIVERS_INC_STM32F103XX_GPIO_DRIVER_H_ */

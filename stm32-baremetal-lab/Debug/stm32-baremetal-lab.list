@@ -35,11 +35,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_rnglists 0000002c  00000000  00000000  000013c8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_line   000000bd  00000000  00000000  000013f4  2**0
+ 16 .debug_line   000000bb  00000000  00000000  000013f4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_str    000001b3  00000000  00000000  000014b1  2**0
+ 17 .debug_str    000001b3  00000000  00000000  000014af  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .comment      00000043  00000000  00000000  00001664  2**0
+ 18 .comment      00000043  00000000  00000000  00001662  2**0
                   CONTENTS, READONLY
  19 .debug_frame  00000054  00000000  00000000  000016a8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -77,17 +77,14 @@ Disassembly of section .text:
  800016c:	08000214 	.word	0x08000214
 
 08000170 <main>:
-#if !defined(__SOFT_FP__) && defined(__ARM_FP)
-  #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
-#endif
+#include <stm32f103xx_gpio_driver.h>
 
 int main(void)
 {
  8000170:	b480      	push	{r7}
  8000172:	af00      	add	r7, sp, #0
 
-	/* Loop forever */
-	for (;;);
+	while (1)
  8000174:	bf00      	nop
  8000176:	e7fd      	b.n	8000174 <main+0x4>
 
