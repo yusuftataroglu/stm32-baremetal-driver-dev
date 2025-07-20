@@ -5,26 +5,23 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Src/syscalls.c \
-../Src/sysmem.c 
+../Experiments/002_Button_Input/main.c 
 
 OBJS += \
-./Src/syscalls.o \
-./Src/sysmem.o 
+./Experiments/002_Button_Input/main.o 
 
 C_DEPS += \
-./Src/syscalls.d \
-./Src/sysmem.d 
+./Experiments/002_Button_Input/main.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-Src/%.o Src/%.su Src/%.cyclo: ../Src/%.c Src/subdir.mk
+Experiments/002_Button_Input/%.o Experiments/002_Button_Input/%.su Experiments/002_Button_Input/%.cyclo: ../Experiments/002_Button_Input/%.c Experiments/002_Button_Input/subdir.mk
 	arm-none-eabi-gcc "$<" -mcpu=cortex-m3 -std=gnu11 -g -DDEBUG -DSTM32F103RBTx -DSTM32 -DSTM32F1 -DNUCLEO_F103RB -c -I../Inc -I"C:/Users/yusuf/OneDrive/Belgeler/STM32_Projects/stm32-baremetal-driver-dev/stm32-baremetal-lab/Drivers/CustomDrivers/Inc" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfloat-abi=soft -mthumb -o "$@"
 
-clean: clean-Src
+clean: clean-Experiments-2f-002_Button_Input
 
-clean-Src:
-	-$(RM) ./Src/syscalls.cyclo ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.cyclo ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su
+clean-Experiments-2f-002_Button_Input:
+	-$(RM) ./Experiments/002_Button_Input/main.cyclo ./Experiments/002_Button_Input/main.d ./Experiments/002_Button_Input/main.o ./Experiments/002_Button_Input/main.su
 
-.PHONY: clean-Src
+.PHONY: clean-Experiments-2f-002_Button_Input
 
