@@ -116,14 +116,6 @@ typedef struct
 	GPIO_PinConfig_t GPIO_PinConfig; /*!< GPIO pin configuration settings */
 } GPIO_Handle_t;
 
-typedef enum
-{
-	GPIO_INTERRUPT_NONE = 0,
-	GPIO_INTERRUPT_RISING_EDGE,
-	GPIO_INTERRUPT_FALLING_EDGE,
-	GPIO_INTERRUPT_BOTH_EDGES
-} GPIO_InterruptEdge_t;
-
 /**************************************
  * @def DRIVER API FUNCTION PROTOTYPES
  **************************************/

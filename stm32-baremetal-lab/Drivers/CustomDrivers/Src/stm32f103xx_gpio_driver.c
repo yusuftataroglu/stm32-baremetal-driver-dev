@@ -63,6 +63,10 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 
 // 4. Configure pull-up/pull-down if needed (only for input PU/PD)
 	GPIO_ConfigPuPd(pGPIOHandle->pGPIOx, &(pGPIOHandle->GPIO_PinConfig));
+
+// 5. Configure AFIO & EXTI registers if needed (only for interrupt modes)
+    GPIO_ConfigInterrupt(pGPIOHandle);
+
 }
 
 void GPIO_DeInit(GPIO_RegDef_t *pGPIOx)
@@ -324,4 +328,3 @@ static void GPIO_ConfigInterrupt(GPIO_Handle_t *pGPIOHandle)
 		EXTI->FTSR |= (1 << pinNumber);
 	}
 }
-
