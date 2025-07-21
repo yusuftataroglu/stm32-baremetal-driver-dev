@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  00001668  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000009b0  00000000  00000000  00001691  2**0
+ 12 .debug_info   00000aef  00000000  00000000  00001691  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00000304  00000000  00000000  00002041  2**0
+ 13 .debug_abbrev 00000320  00000000  00000000  00002180  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000000c0  00000000  00000000  00002348  2**3
+ 14 .debug_aranges 000000c8  00000000  00000000  000024a0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00000086  00000000  00000000  00002408  2**0
+ 15 .debug_rnglists 0000008d  00000000  00000000  00002568  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_line   00000965  00000000  00000000  0000248e  2**0
+ 16 .debug_line   00000a5d  00000000  00000000  000025f5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_str    00000610  00000000  00000000  00002df3  2**0
+ 17 .debug_str    0000068c  00000000  00000000  00003052  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .comment      00000043  00000000  00000000  00003403  2**0
+ 18 .comment      00000043  00000000  00000000  000036de  2**0
                   CONTENTS, READONLY
- 19 .debug_frame  00000248  00000000  00000000  00003448  2**2
+ 19 .debug_frame  00000270  00000000  00000000  00003724  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_line_str 00000088  00000000  00000000  00003690  2**0
+ 20 .debug_line_str 00000088  00000000  00000000  00003994  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -77,9 +77,9 @@ Disassembly of section .text:
  800016c:	08000640 	.word	0x08000640
 
 08000170 <GPIO_PeriClockControl>:
-static void GPIO_ConfigMode(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
 static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
 static void GPIO_ConfigPuPd(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
+static void GPIO_ConfigInterrupt(GPIO_Handle_t *pGPIOHandle);
 
 void GPIO_PeriClockControl(GPIO_RegDef_t *GPIOx, uint8_t enorDi)
 {
@@ -493,40 +493,39 @@ static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig
  80003b8:	af00      	add	r7, sp, #0
  80003ba:	6078      	str	r0, [r7, #4]
  80003bc:	6039      	str	r1, [r7, #0]
-	uint32_t pinNumber = pPinConfig->GPIO_PinNumber;
- 80003be:	683b      	ldr	r3, [r7, #0]
- 80003c0:	781b      	ldrb	r3, [r3, #0]
- 80003c2:	613b      	str	r3, [r7, #16]
-	uint32_t shiftAmount = (pinNumber % 8) * 4;
- 80003c4:	693b      	ldr	r3, [r7, #16]
- 80003c6:	f003 0307 	and.w	r3, r3, #7
- 80003ca:	009b      	lsls	r3, r3, #2
- 80003cc:	60fb      	str	r3, [r7, #12]
-	uint32_t modeBits = 0;
- 80003ce:	2300      	movs	r3, #0
- 80003d0:	617b      	str	r3, [r7, #20]
-
 	if (pPinConfig->GPIO_PinMode == GPIO_MODE_OUTPUT_PP
- 80003d2:	683b      	ldr	r3, [r7, #0]
- 80003d4:	785b      	ldrb	r3, [r3, #1]
- 80003d6:	2b02      	cmp	r3, #2
- 80003d8:	d00b      	beq.n	80003f2 <GPIO_ConfigSpeed+0x3e>
+ 80003be:	683b      	ldr	r3, [r7, #0]
+ 80003c0:	785b      	ldrb	r3, [r3, #1]
+ 80003c2:	2b02      	cmp	r3, #2
+ 80003c4:	d00b      	beq.n	80003de <GPIO_ConfigSpeed+0x2a>
 			|| pPinConfig->GPIO_PinMode == GPIO_MODE_OUTPUT_OD
- 80003da:	683b      	ldr	r3, [r7, #0]
- 80003dc:	785b      	ldrb	r3, [r3, #1]
- 80003de:	2b03      	cmp	r3, #3
- 80003e0:	d007      	beq.n	80003f2 <GPIO_ConfigSpeed+0x3e>
+ 80003c6:	683b      	ldr	r3, [r7, #0]
+ 80003c8:	785b      	ldrb	r3, [r3, #1]
+ 80003ca:	2b03      	cmp	r3, #3
+ 80003cc:	d007      	beq.n	80003de <GPIO_ConfigSpeed+0x2a>
 			|| pPinConfig->GPIO_PinMode == GPIO_MODE_AF_PP
- 80003e2:	683b      	ldr	r3, [r7, #0]
- 80003e4:	785b      	ldrb	r3, [r3, #1]
- 80003e6:	2b04      	cmp	r3, #4
- 80003e8:	d003      	beq.n	80003f2 <GPIO_ConfigSpeed+0x3e>
+ 80003ce:	683b      	ldr	r3, [r7, #0]
+ 80003d0:	785b      	ldrb	r3, [r3, #1]
+ 80003d2:	2b04      	cmp	r3, #4
+ 80003d4:	d003      	beq.n	80003de <GPIO_ConfigSpeed+0x2a>
 			|| pPinConfig->GPIO_PinMode == GPIO_MODE_AF_OD)
- 80003ea:	683b      	ldr	r3, [r7, #0]
- 80003ec:	785b      	ldrb	r3, [r3, #1]
- 80003ee:	2b05      	cmp	r3, #5
- 80003f0:	d13f      	bne.n	8000472 <GPIO_ConfigSpeed+0xbe>
+ 80003d6:	683b      	ldr	r3, [r7, #0]
+ 80003d8:	785b      	ldrb	r3, [r3, #1]
+ 80003da:	2b05      	cmp	r3, #5
+ 80003dc:	d149      	bne.n	8000472 <GPIO_ConfigSpeed+0xbe>
 	{
+		uint32_t pinNumber = pPinConfig->GPIO_PinNumber;
+ 80003de:	683b      	ldr	r3, [r7, #0]
+ 80003e0:	781b      	ldrb	r3, [r3, #0]
+ 80003e2:	613b      	str	r3, [r7, #16]
+		uint32_t shiftAmount = (pinNumber % 8) * 4;
+ 80003e4:	693b      	ldr	r3, [r7, #16]
+ 80003e6:	f003 0307 	and.w	r3, r3, #7
+ 80003ea:	009b      	lsls	r3, r3, #2
+ 80003ec:	60fb      	str	r3, [r7, #12]
+		uint32_t modeBits = 0;
+ 80003ee:	2300      	movs	r3, #0
+ 80003f0:	617b      	str	r3, [r7, #20]
 // Map enum to actual MODE[1:0] bits
 		switch (pPinConfig->GPIO_PinSpeed)
  80003f2:	683b      	ldr	r3, [r7, #0]
@@ -633,18 +632,17 @@ static void GPIO_ConfigPuPd(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
  800047e:	af00      	add	r7, sp, #0
  8000480:	6078      	str	r0, [r7, #4]
  8000482:	6039      	str	r1, [r7, #0]
-	uint32_t pinNumber = pPinConfig->GPIO_PinNumber;
- 8000484:	683b      	ldr	r3, [r7, #0]
- 8000486:	781b      	ldrb	r3, [r3, #0]
- 8000488:	60fb      	str	r3, [r7, #12]
-
 // Check if the pin mode is input with pull-up or pull-down
 	if (pPinConfig->GPIO_PinMode == GPIO_MODE_INPUT_PU_PD)
- 800048a:	683b      	ldr	r3, [r7, #0]
- 800048c:	785b      	ldrb	r3, [r3, #1]
- 800048e:	2b01      	cmp	r3, #1
- 8000490:	d11b      	bne.n	80004ca <GPIO_ConfigPuPd+0x50>
+ 8000484:	683b      	ldr	r3, [r7, #0]
+ 8000486:	785b      	ldrb	r3, [r3, #1]
+ 8000488:	2b01      	cmp	r3, #1
+ 800048a:	d11e      	bne.n	80004ca <GPIO_ConfigPuPd+0x50>
 	{
+		uint32_t pinNumber = pPinConfig->GPIO_PinNumber;
+ 800048c:	683b      	ldr	r3, [r7, #0]
+ 800048e:	781b      	ldrb	r3, [r3, #0]
+ 8000490:	60fb      	str	r3, [r7, #12]
 		switch (pPinConfig->GPIO_PinPuPdControl)
  8000492:	683b      	ldr	r3, [r7, #0]
  8000494:	78db      	ldrb	r3, [r3, #3]

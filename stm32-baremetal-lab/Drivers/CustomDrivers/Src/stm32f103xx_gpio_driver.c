@@ -10,6 +10,7 @@
 static void GPIO_ConfigMode(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
 static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
 static void GPIO_ConfigPuPd(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
+static void GPIO_ConfigInterrupt(GPIO_Handle_t *pGPIOHandle);
 
 void GPIO_PeriClockControl(GPIO_RegDef_t *GPIOx, uint8_t enorDi)
 {
@@ -202,15 +203,14 @@ static void GPIO_ConfigMode(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
  */
 static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
 {
-	uint32_t pinNumber = pPinConfig->GPIO_PinNumber;
-	uint32_t shiftAmount = (pinNumber % 8) * 4;
-	uint32_t modeBits = 0;
-
 	if (pPinConfig->GPIO_PinMode == GPIO_MODE_OUTPUT_PP
 			|| pPinConfig->GPIO_PinMode == GPIO_MODE_OUTPUT_OD
 			|| pPinConfig->GPIO_PinMode == GPIO_MODE_AF_PP
 			|| pPinConfig->GPIO_PinMode == GPIO_MODE_AF_OD)
 	{
+		uint32_t pinNumber = pPinConfig->GPIO_PinNumber;
+		uint32_t shiftAmount = (pinNumber % 8) * 4;
+		uint32_t modeBits = 0;
 // Map enum to actual MODE[1:0] bits
 		switch (pPinConfig->GPIO_PinSpeed)
 		{
@@ -255,11 +255,10 @@ static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig
  */
 static void GPIO_ConfigPuPd(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
 {
-	uint32_t pinNumber = pPinConfig->GPIO_PinNumber;
-
 // Check if the pin mode is input with pull-up or pull-down
 	if (pPinConfig->GPIO_PinMode == GPIO_MODE_INPUT_PU_PD)
 	{
+		uint32_t pinNumber = pPinConfig->GPIO_PinNumber;
 		switch (pPinConfig->GPIO_PinPuPdControl)
 		{
 		case GPIO_PULLUP:
@@ -273,6 +272,56 @@ static void GPIO_ConfigPuPd(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
 // Do nothing
 			break;
 		}
+	}
+}
+
+/**
+ * @brief  Configures the EXTI peripheral and AFIO registers for GPIO interrupt.
+ * @param  pGPIOHandle: Pointer to the GPIO handle structure
+ * @note   This function only performs AFIO and EXTI configuration.
+ *         NVIC configuration must be done separately using GPIO_IRQInterruptConfig().
+ * @return None
+ */
+static void GPIO_ConfigInterrupt(GPIO_Handle_t *pGPIOHandle)
+{
+	uint8_t mode = pGPIOHandle->GPIO_PinConfig.GPIO_PinMode;
+
+	if (mode != GPIO_MODE_IT_FT && mode != GPIO_MODE_IT_RT
+			&& mode != GPIO_MODE_IT_RFT)
+	{
+// Not an interrupt mode, exit early
+		return;
+	}
+	/* 1. Map GPIO port to appropriate EXTI line via AFIO_EXTICR */
+	uint8_t pinNumber = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber;
+	uint8_t extiCrIndex = pinNumber / 4;
+	uint8_t fieldPosition = (pinNumber % 4) * 4;
+
+// Clear the target field first
+	AFIO->EXTICR[extiCrIndex] &= ~(0xF << fieldPosition);
+
+// Set the port code into the field
+	uint8_t port_code = GPIO_PORT_CODE(pGPIOHandle->pGPIOx);
+	AFIO->EXTICR[extiCrIndex] |= (port_code << fieldPosition);
+
+	/* 2. Unmask the interrupt line in EXTI_IMR */
+	EXTI->IMR |= (1 << pinNumber);
+
+	/* 3. Configure rising/falling trigger */
+	if (mode == GPIO_MODE_IT_FT)
+	{
+		EXTI->FTSR |= (1 << pinNumber);
+		EXTI->RTSR &= ~(1 << pinNumber);
+	}
+	else if (mode == GPIO_MODE_IT_RT)
+	{
+		EXTI->RTSR |= (1 << pinNumber);
+		EXTI->FTSR &= ~(1 << pinNumber);
+	}
+	else if (mode == GPIO_MODE_IT_RFT)
+	{
+		EXTI->RTSR |= (1 << pinNumber);
+		EXTI->FTSR |= (1 << pinNumber);
 	}
 }
 

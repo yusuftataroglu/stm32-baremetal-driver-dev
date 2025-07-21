@@ -11,6 +11,11 @@
 #ifndef CUSTOMDRIVERS_INC_STM32F103XX_GPIO_DRIVER_H_
 #define CUSTOMDRIVERS_INC_STM32F103XX_GPIO_DRIVER_H_
 
+#define GPIO_PORT_CODE(GPIOx)     \
+    ((GPIOx == GPIOA) ? 0 :       \
+    (GPIOx == GPIOB) ? 1 :        \
+    (GPIOx == GPIOC) ? 2 : 0)
+
 #include "stm32f103xx.h"
 
 /**
@@ -110,6 +115,14 @@ typedef struct
 	GPIO_RegDef_t *pGPIOx; /*!< Pointer to GPIO peripheral base address */
 	GPIO_PinConfig_t GPIO_PinConfig; /*!< GPIO pin configuration settings */
 } GPIO_Handle_t;
+
+typedef enum
+{
+	GPIO_INTERRUPT_NONE = 0,
+	GPIO_INTERRUPT_RISING_EDGE,
+	GPIO_INTERRUPT_FALLING_EDGE,
+	GPIO_INTERRUPT_BOTH_EDGES
+} GPIO_InterruptEdge_t;
 
 /**************************************
  * @def DRIVER API FUNCTION PROTOTYPES

@@ -81,7 +81,8 @@ typedef struct
  *    GPIOB : 0x40010C00
  *    GPIOC : 0x40011000
  *
- * Reference Manual: RM0008, Section 9 (General-purpose I/Os)
+ * Reference Manual: RM0008, Section 9 (General-purpose and alternate-function I/Os
+ (GPIOs and AFIOs))
  ********************************************************************************************************/
 typedef struct
 {
@@ -94,11 +95,49 @@ typedef struct
 	__vo uint32_t LCKR; /*!< Port Configuration Lock Register,           	 	Address offset: 0x18 */
 } GPIO_RegDef_t;
 
+/********************************** AFIO REGISTER STRUCTURE DEFINITION **********************************
+ * Base Address: 0x40010000 (APB2PERIPH_BASEADDR)
+ * Reference Manual: RM0008, Section 9 (General-purpose and alternate-function I/Os)
+ ********************************************************************************************************/
+typedef struct
+{
+	__vo uint32_t EVCR; /*!< Event Control Register,                           	Address offset: 0x00
+	 Used to configure external event outputs on a GPIO pin. */
+	__vo uint32_t MAPR; /*!< AF Remap and Debug I/O Configuration Register,   	Address offset: 0x04
+	 Controls alternate function remapping and debug pin configuration. */
+	__vo uint32_t EXTICR[4]; /*!< External Interrupt Configuration Register,   	Address offset: 0x08, 0x0C, 0x10, 0x14
+	 Selects GPIO port source for EXTI0 to EXTI15 lines. */
+	__vo uint32_t MAPR2; /*!< AF Remap and Debug I/O Configuration Register 2, 	Address offset: 0x18
+	 Extends remap options for additional peripherals (e.g. TIM9–TIM11). */
+} AFIO_RegDef_t;
+
+/********************************** EXTI REGISTER STRUCTURE DEFINITION **********************************
+ * Base Address: 0x40010400 (APB2PERIPH_BASEADDR + 0x0400)
+ * Reference Manual: RM0008, Section 10 (Interrupts and events)
+ ********************************************************************************************************/
+typedef struct
+{
+	__vo uint32_t IMR; /*!< Interrupt Mask Register,                         	Address offset: 0x00
+	 Enables/disables interrupt request for each EXTI line. */
+	__vo uint32_t EMR; /*!< Event Mask Register,                             	Address offset: 0x04
+	 Enables/disables event request (non-interrupt) for each EXTI line. */
+	__vo uint32_t RTSR; /*!< Rising Trigger Selection Register,              	Address offset: 0x08
+	 Configures which EXTI lines trigger on a rising edge. */
+	__vo uint32_t FTSR; /*!< Falling Trigger Selection Register,             	Address offset: 0x0C
+	 Configures which EXTI lines trigger on a falling edge. */
+	__vo uint32_t SWIER; /*!< Software Interrupt Event Register,              	Address offset: 0x10
+	 Allows software to trigger an interrupt manually on any EXTI line. */
+	__vo uint32_t PR; /*!< Pending Register,                               		Address offset: 0x14
+	 Indicates and clears pending interrupt requests. */
+} EXTI_RegDef_t;
+
 /************************************** PERIPHERAL REGISTERS **************************************/
 #define GPIOA 	((GPIO_RegDef_t*) GPIOA_BASEADDR)
 #define GPIOB   ((GPIO_RegDef_t*) GPIOB_BASEADDR)
 #define GPIOC   ((GPIO_RegDef_t*) GPIOC_BASEADDR)
 #define RCC     ((RCC_RegDef_t*)  RCC_BASEADDR)
+#define AFIO    ((AFIO_RegDef_t*) AFIO_BASEADDR)
+#define EXTI    ((EXTI_RegDef_t*) EXTI_BASEADDR)
 
 /******************************** RCC PERIPHERAL CLOCK ENABLE MACROS ********************************/
 
