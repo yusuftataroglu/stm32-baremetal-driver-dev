@@ -11,7 +11,7 @@ RM := rm -rf
 -include sources.mk
 -include Startup/subdir.mk
 -include Src/subdir.mk
--include Experiments/004_Button_Interrupt/subdir.mk
+-include Experiments/005_Interrupt_Priority/subdir.mk
 -include Drivers/CustomDrivers/Src/subdir.mk
 -include objects.mk
 

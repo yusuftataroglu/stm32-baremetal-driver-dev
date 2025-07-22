@@ -1,3 +1,0 @@
-../Experiments/004_Button_Interrupt/main.c:11:6:delay	2
-../Experiments/004_Button_Interrupt/main.c:17:5:main	1
-../Experiments/004_Button_Interrupt/main.c:38:6:EXTI15_10_IRQHandler	1

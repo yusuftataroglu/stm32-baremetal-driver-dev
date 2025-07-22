@@ -190,7 +190,7 @@ static void GPIO_ConfigMode(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
 	case GPIO_MODE_IT_RT:
 	case GPIO_MODE_IT_RFT:
 		mode = 0x0;
-		cnf = 0x1;
+		cnf = 0x2;
 		break;
 	default:
 		return;
@@ -268,7 +268,10 @@ static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig
 static void GPIO_ConfigPuPd(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig)
 {
 // Check if the pin mode is input with pull-up or pull-down
-	if (pPinConfig->GPIO_PinMode == GPIO_MODE_INPUT_PU_PD)
+	GPIO_Mode_t pinMode = pPinConfig->GPIO_PinMode;
+
+	if (pinMode == GPIO_MODE_INPUT_PU_PD || pinMode == GPIO_MODE_IT_FT
+			|| pinMode == GPIO_MODE_IT_RT || pinMode == GPIO_MODE_IT_RFT)
 	{
 		uint32_t pinNumber = pPinConfig->GPIO_PinNumber;
 		switch (pPinConfig->GPIO_PinPuPdControl)
