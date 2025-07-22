@@ -12,11 +12,19 @@ static void GPIO_ConfigSpeed(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig
 static void GPIO_ConfigPuPd(GPIO_RegDef_t *pGPIOx, GPIO_PinConfig_t *pPinConfig);
 static void GPIO_ConfigInterrupt(GPIO_Handle_t *pGPIOHandle);
 
-void GPIO_PeriClockControl(GPIO_RegDef_t *GPIOx, uint8_t enorDi)
+void GPIO_PeriClockControl(GPIO_Handle_t *pGPIOHandle, uint8_t enorDi)
 {
+	GPIO_Mode_t pinMode = pGPIOHandle->GPIO_PinConfig.GPIO_PinMode;
+
+	if (pinMode == GPIO_MODE_IT_RT || pinMode == GPIO_MODE_IT_FT
+			|| pinMode == GPIO_MODE_IT_RFT)
+	{
+		RCC->APB2ENR |= (1 << 0);
+	}
+
 	if (enorDi == 1)
 	{
-		switch ((uint32_t) GPIOx)
+		switch ((uint32_t) pGPIOHandle->pGPIOx)
 		{
 		case (uint32_t) GPIOA:
 			GPIOA_PCLK_EN();
@@ -33,7 +41,7 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *GPIOx, uint8_t enorDi)
 	}
 	else
 	{
-		switch ((uint32_t) GPIOx)
+		switch ((uint32_t) pGPIOHandle->pGPIOx)
 		{
 		case (uint32_t) GPIOA:
 			GPIOA_PCLK_DI();
@@ -53,7 +61,7 @@ void GPIO_PeriClockControl(GPIO_RegDef_t *GPIOx, uint8_t enorDi)
 void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 {
 // 1. Enable peripheral clock
-	GPIO_PeriClockControl(pGPIOHandle->pGPIOx, ENABLE);
+	GPIO_PeriClockControl(pGPIOHandle, ENABLE);
 
 // 2. Configure pin mode (CNF + MODE)
 	GPIO_ConfigMode(pGPIOHandle->pGPIOx, &(pGPIOHandle->GPIO_PinConfig));
@@ -65,7 +73,7 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	GPIO_ConfigPuPd(pGPIOHandle->pGPIOx, &(pGPIOHandle->GPIO_PinConfig));
 
 // 5. Configure AFIO & EXTI registers if needed (only for interrupt modes)
-    GPIO_ConfigInterrupt(pGPIOHandle);
+	GPIO_ConfigInterrupt(pGPIOHandle);
 
 }
 

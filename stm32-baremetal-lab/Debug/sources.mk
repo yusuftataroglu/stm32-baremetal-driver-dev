@@ -23,7 +23,7 @@ C_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 Drivers/CustomDrivers/Src \
-Experiments/003_Multiple_Leds \
+Experiments/004_Button_Interrupt \
 Src \
 Startup \
 

@@ -1,6 +1,6 @@
 "./Drivers/CustomDrivers/Src/core_nvic.o"
 "./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.o"
-"./Experiments/003_Multiple_Leds/main.o"
+"./Experiments/004_Button_Interrupt/main.o"
 "./Src/syscalls.o"
 "./Src/sysmem.o"
 "./Startup/startup_stm32f103rbtx.o"

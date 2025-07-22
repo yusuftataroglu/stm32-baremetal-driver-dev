@@ -126,12 +126,13 @@ typedef struct
  * This function enables or disables the peripheral clock associated with
  * the specified GPIO port using the EnorDi flag.
  *
- * @param[in] GPIOx   GPIO port base address (e.g., GPIOA)
+ * @param[in] pGPIOHandle   Pointer to a GPIO handle structure containing
+ *                         the configuration information for the specified GPIO pin.
  * @param[in] EnorDi  ENABLE to activate clock, DISABLE to deactivate
  *
  * @return None
  */
-void GPIO_PeriClockControl(GPIO_RegDef_t *pGPIOx, uint8_t enorDi);
+void GPIO_PeriClockControl(GPIO_Handle_t *pGPIOHandle, uint8_t enorDi);
 
 /**
  * @brief  Initializes the specified GPIO pin based on user configuration.
