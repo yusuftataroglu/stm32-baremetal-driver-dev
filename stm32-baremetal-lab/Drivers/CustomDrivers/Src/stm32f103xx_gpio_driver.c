@@ -336,3 +336,9 @@ static void GPIO_ConfigInterrupt(GPIO_Handle_t *pGPIOHandle)
 		EXTI->FTSR |= (1 << pinNumber);
 	}
 }
+
+void GPIO_IRQHandling(GPIO_PinNumber_t pinNumber)
+{
+	if (EXTI->PR & (1 << pinNumber))
+		EXTI->PR |= (1 << pinNumber);
+}

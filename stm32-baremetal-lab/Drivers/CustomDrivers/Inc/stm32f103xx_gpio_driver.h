@@ -223,4 +223,16 @@ void GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, uint16_t value);
  */
 void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, GPIO_PinNumber_t pinNumber);
 
+/**
+ * @brief  Handles interrupt for the specified GPIO pin.
+ *
+ * This function clears the pending bit in the EXTI pending register (EXTI_PR)
+ * corresponding to the given pin number. It should be called inside the
+ * respective IRQ handler function to acknowledge and clear the interrupt.
+ *
+ * @param[in] pinNumber GPIO pin number (0 to 15) mapped to EXTI line
+ *
+ * @return None
+ */
+void GPIO_IRQHandling(GPIO_PinNumber_t pinNumber);
 #endif /* CUSTOMDRIVERS_INC_STM32F103XX_GPIO_DRIVER_H_ */
