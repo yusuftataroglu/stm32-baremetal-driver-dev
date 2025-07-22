@@ -7,7 +7,7 @@
 
 #include "core_nvic.h"
 
-void NVIC_EnableIRQ(uint8_t IRQNumber)
+void NVIC_EnableIRQ(IRQNumber_t IRQNumber)
 {
 	if (IRQNumber < 32)
 	{
@@ -23,7 +23,7 @@ void NVIC_EnableIRQ(uint8_t IRQNumber)
 	}
 }
 
-void NVIC_DisableIRQ(uint8_t IRQNumber)
+void NVIC_DisableIRQ(IRQNumber_t IRQNumber)
 {
 	if (IRQNumber < 32)
 	{
@@ -39,7 +39,7 @@ void NVIC_DisableIRQ(uint8_t IRQNumber)
 	}
 }
 
-void NVIC_SetPriority(uint8_t IRQNumber, uint8_t priority)
+void NVIC_SetPriority(IRQNumber_t IRQNumber, uint8_t priority)
 {
 	uint8_t iprIndex = IRQNumber / 4;
 	uint8_t iprSection = IRQNumber % 4;
