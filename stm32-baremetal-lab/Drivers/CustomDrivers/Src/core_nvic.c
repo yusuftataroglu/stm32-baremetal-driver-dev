@@ -38,3 +38,14 @@ void NVIC_DisableIRQ(uint8_t IRQNumber)
 		NVIC_ICER2 |= (1 << (IRQNumber % 32));
 	}
 }
+
+void NVIC_SetPriority(uint8_t IRQNumber, uint8_t priority)
+{
+	uint8_t iprIndex = IRQNumber / 4;
+	uint8_t iprSection = IRQNumber % 4;
+	uint8_t beginningOfValidBitsPos = 4;
+	uint8_t shiftAmount = (iprSection * 8) + beginningOfValidBitsPos;
+
+	*(NVIC_PR_BASEADDR + iprIndex) &= ~(0XFF << shiftAmount);
+	*(NVIC_PR_BASEADDR + iprIndex) |= (priority << shiftAmount);
+}

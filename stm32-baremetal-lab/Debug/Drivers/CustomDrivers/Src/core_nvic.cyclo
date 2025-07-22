@@ -1,2 +1,3 @@
 ../Drivers/CustomDrivers/Src/core_nvic.c:10:6:NVIC_EnableIRQ	4
 ../Drivers/CustomDrivers/Src/core_nvic.c:26:6:NVIC_DisableIRQ	4
+../Drivers/CustomDrivers/Src/core_nvic.c:42:6:NVIC_SetPriority	1
