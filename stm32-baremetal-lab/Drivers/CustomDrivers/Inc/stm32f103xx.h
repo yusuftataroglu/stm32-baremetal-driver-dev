@@ -165,8 +165,8 @@ typedef struct
 #define RCC     ((RCC_RegDef_t*)  RCC_BASEADDR)
 #define AFIO    ((AFIO_RegDef_t*) AFIO_BASEADDR)
 #define EXTI    ((EXTI_RegDef_t*) EXTI_BASEADDR)
-#define SPI1	((SPI_RegDef_t*)) SPI1_BASEADDR)
-#define SPI2	((SPI_RegDef_t*)) SPI2_BASEADDR)
+#define SPI1	((SPI_RegDef_t*) SPI1_BASEADDR)
+#define SPI2	((SPI_RegDef_t*) SPI2_BASEADDR)
 
 /******************************** RCC PERIPHERAL CLOCK ENABLE MACROS ********************************/
 #define GPIOA_PCLK_EN()     (RCC->APB2ENR |= (1 << 2))   /* Enable clock for GPIOA */
