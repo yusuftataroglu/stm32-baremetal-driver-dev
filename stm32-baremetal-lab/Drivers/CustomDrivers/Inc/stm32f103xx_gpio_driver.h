@@ -11,12 +11,12 @@
 #ifndef CUSTOMDRIVERS_INC_STM32F103XX_GPIO_DRIVER_H_
 #define CUSTOMDRIVERS_INC_STM32F103XX_GPIO_DRIVER_H_
 
+#include "stm32f103xx.h"
+
 #define GPIO_PORT_CODE(GPIOx)     \
     ((GPIOx == GPIOA) ? 0 :       \
     (GPIOx == GPIOB) ? 1 :        \
     (GPIOx == GPIOC) ? 2 : 0)
-
-#include "stm32f103xx.h"
 
 /**
  * @brief GPIO pin number definitions (0 to 15)

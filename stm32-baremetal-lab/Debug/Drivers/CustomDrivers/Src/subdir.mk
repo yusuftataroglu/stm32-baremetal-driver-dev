@@ -6,15 +6,18 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../Drivers/CustomDrivers/Src/core_nvic.c \
-../Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.c 
+../Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.c \
+../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c 
 
 OBJS += \
 ./Drivers/CustomDrivers/Src/core_nvic.o \
-./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.o 
+./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.o \
+./Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.o 
 
 C_DEPS += \
 ./Drivers/CustomDrivers/Src/core_nvic.d \
-./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.d 
+./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.d \
+./Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -24,7 +27,7 @@ Drivers/CustomDrivers/Src/%.o Drivers/CustomDrivers/Src/%.su Drivers/CustomDrive
 clean: clean-Drivers-2f-CustomDrivers-2f-Src
 
 clean-Drivers-2f-CustomDrivers-2f-Src:
-	-$(RM) ./Drivers/CustomDrivers/Src/core_nvic.cyclo ./Drivers/CustomDrivers/Src/core_nvic.d ./Drivers/CustomDrivers/Src/core_nvic.o ./Drivers/CustomDrivers/Src/core_nvic.su ./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.cyclo ./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.d ./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.o ./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.su
+	-$(RM) ./Drivers/CustomDrivers/Src/core_nvic.cyclo ./Drivers/CustomDrivers/Src/core_nvic.d ./Drivers/CustomDrivers/Src/core_nvic.o ./Drivers/CustomDrivers/Src/core_nvic.su ./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.cyclo ./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.d ./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.o ./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.su ./Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.cyclo ./Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.d ./Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.o ./Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.su
 
 .PHONY: clean-Drivers-2f-CustomDrivers-2f-Src
 

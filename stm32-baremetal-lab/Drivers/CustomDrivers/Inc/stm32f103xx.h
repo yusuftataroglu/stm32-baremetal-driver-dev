@@ -47,6 +47,7 @@
 
 /********************************** BASE ADDRESSES OF PERIPHERALS ON APB1 *********************************/
 #define TIM2_BASEADDR			(APB1PERIPH_BASEADDR)
+#define SPI2_BASEADDR          	(APB1PERIPH_BASEADDR + 0x3800U)
 #define USART2_BASEADDR			(APB1PERIPH_BASEADDR + 0x4400U)
 #define USART3_BASEADDR			(APB1PERIPH_BASEADDR + 0x4800U)
 #define UART4_BASEADDR			(APB1PERIPH_BASEADDR + 0x4C00U)
@@ -131,6 +132,32 @@ typedef struct
 	 Indicates and clears pending interrupt requests. */
 } EXTI_RegDef_t;
 
+/********************************** SPI REGISTER STRUCTURE DEFINITION **********************************
+ * Base Address: 0x40013000 (APB2PERIPH_BASEADDR + 0x3000)
+ * Reference Manual: RM0008, Section 25 (Serial Peripheral Interface - SPI)
+ *******************************************************************************************************/
+typedef struct
+{
+	__vo uint32_t CR1; /*!< Control Register 1,                         Address offset: 0x00
+	 Configures the main operating parameters such as master/slave mode, clock polarity/phase, data frame format, etc. */
+	__vo uint32_t CR2; /*!< Control Register 2,                         Address offset: 0x04
+	 Additional configuration like interrupt enables and DMA control. */
+	__vo uint32_t SR; /*!< Status Register,                            Address offset: 0x08
+	 Indicates current status of SPI, such as TXE, RXNE, BSY flags. */
+	__vo uint32_t DR; /*!< Data Register,                              Address offset: 0x0C
+	 Used for both transmitting and receiving 8-bit or 16-bit data. */
+	__vo uint32_t CRCPR; /*!< CRC Polynomial Register,                    Address offset: 0x10
+	 Holds the CRC polynomial used for CRC calculation. */
+	__vo uint32_t RXCRCR;/*!< RX CRC Register,                            Address offset: 0x14
+	 Contains the CRC value calculated from received data. */
+	__vo uint32_t TXCRCR;/*!< TX CRC Register,                            Address offset: 0x18
+	 Contains the CRC value calculated from transmitted data. */
+	__vo uint32_t I2SCFGR;/*!< I2S Configuration Register,                Address offset: 0x1C
+	 Configures the peripheral to operate in I2S mode instead of SPI. */
+	__vo uint32_t I2SPR; /*!< I2S Prescaler Register,                     Address offset: 0x20
+	 Sets the prescaler value for I2S clock generation. */
+} SPI_RegDef_t;
+
 /************************************** PERIPHERAL REGISTERS **************************************/
 #define GPIOA 	((GPIO_RegDef_t*) GPIOA_BASEADDR)
 #define GPIOB   ((GPIO_RegDef_t*) GPIOB_BASEADDR)
@@ -138,9 +165,10 @@ typedef struct
 #define RCC     ((RCC_RegDef_t*)  RCC_BASEADDR)
 #define AFIO    ((AFIO_RegDef_t*) AFIO_BASEADDR)
 #define EXTI    ((EXTI_RegDef_t*) EXTI_BASEADDR)
+#define SPI1	((SPI_RegDef_t*)) SPI1_BASEADDR)
+#define SPI2	((SPI_RegDef_t*)) SPI2_BASEADDR)
 
 /******************************** RCC PERIPHERAL CLOCK ENABLE MACROS ********************************/
-
 #define GPIOA_PCLK_EN()     (RCC->APB2ENR |= (1 << 2))   /* Enable clock for GPIOA */
 #define GPIOB_PCLK_EN()     (RCC->APB2ENR |= (1 << 3))   /* Enable clock for GPIOB */
 #define GPIOC_PCLK_EN()     (RCC->APB2ENR |= (1 << 4))   /* Enable clock for GPIOC */
@@ -154,12 +182,12 @@ typedef struct
 #define UART5_PCLK_EN()    	(RCC->APB1ENR |= (1 << 20))  /* Enable clock for UART5 (on APB1) */
 
 #define SPI1_PCLK_EN()      (RCC->APB2ENR |= (1 << 12))  /* Enable clock for SPI1 */
+#define SPI2_PCLK_EN()      (RCC->APB1ENR |= (1 << 14))  /* Enable clock for SPI2 */
 
 #define I2C1_PCLK_EN()      (RCC->APB1ENR |= (1 << 21))  /* Enable clock for I2C1 */
 #define I2C2_PCLK_EN()      (RCC->APB1ENR |= (1 << 22))  /* Enable clock for I2C2 */
 
 /******************************** RCC PERIPHERAL CLOCK DISABLE MACROS ********************************/
-
 #define GPIOA_PCLK_DI()     (RCC->APB2ENR &= ~(1 << 2))   /* Disable clock for GPIOA */
 #define GPIOB_PCLK_DI()     (RCC->APB2ENR &= ~(1 << 3))   /* Disable clock for GPIOB */
 #define GPIOC_PCLK_DI()     (RCC->APB2ENR &= ~(1 << 4))   /* Disable clock for GPIOC */
@@ -173,6 +201,7 @@ typedef struct
 #define UART5_PCLK_DI()    	(RCC->APB1ENR &= ~(1 << 20))  /* Disable clock for UART5 (on APB1) */
 
 #define SPI1_PCLK_DI()      (RCC->APB2ENR &= ~(1 << 12))  /* Disable clock for SPI1 */
+#define SPI2_PCLK_DI()      (RCC->APB1ENR &= ~(1 << 14))  /* Disable clock for SPI2 */
 
 #define I2C1_PCLK_DI()      (RCC->APB1ENR &= ~(1 << 21))  /* Disable clock for I2C1 */
 #define I2C2_PCLK_DI()      (RCC->APB1ENR &= ~(1 << 22))  /* Disable clock for I2C2 */
