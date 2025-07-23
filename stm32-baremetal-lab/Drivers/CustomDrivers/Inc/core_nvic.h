@@ -1,9 +1,8 @@
-/*
- * core_nvic.h
- *
- *  Created on: Jul 22, 2025
- *      Author: yusuf
- */
+/**************************************************************************************
+ * @file    core_nvic.h
+ * @author  Yusuf
+ * @brief   NVIC driver header file (bare-metal, STM32F103RB)
+ **************************************************************************************/
 
 #ifndef CUSTOMDRIVERS_INC_CORE_NVIC_H_
 #define CUSTOMDRIVERS_INC_CORE_NVIC_H_
