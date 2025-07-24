@@ -1,1 +1,2 @@
 ../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:10:6:SPI_PeriClockControl	6
+../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:28:6:SPI_Init	5
