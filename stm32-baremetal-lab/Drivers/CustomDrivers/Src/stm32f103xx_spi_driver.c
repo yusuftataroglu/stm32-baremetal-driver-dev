@@ -97,6 +97,31 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
 	}
 }
 
+void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t len)
+{
+	while (len > 0)
+	{
+		// Wait until TXE (Transmit buffer empty) is set
+		while (!(pSPIx->SR & (1 << 1)));
+
+		// Check DFF (data frame format)
+		if (pSPIx->CR1 & (1 << 11))
+		{
+			// 16-bit DFF
+			pSPIx->DR = *((uint16_t*)pTxBuffer);
+			pTxBuffer += 2;
+			len -= 2;
+		}
+		else
+		{
+			// 8-bit DFF
+			pSPIx->DR = *pTxBuffer;
+			pTxBuffer++;
+			len--;
+		}
+	}
+}
+
 /**
  * @brief  Configures the GPIO pins used for SPI functionality.
  *
