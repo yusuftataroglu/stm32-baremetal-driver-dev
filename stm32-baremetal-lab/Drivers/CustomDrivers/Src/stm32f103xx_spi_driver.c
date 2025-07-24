@@ -72,9 +72,22 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 
 	if (pSPIHandle->SPI_Config.SPI_SSM == SPI_SSM_DISABLED)
 	{
-	    tempreg2 |= (1 << 2); // SSOE enable
+		tempreg2 |= (1 << 2);// SSOE enable
 	}
 
 	pSPIHandle->pSPIx->CR2 = tempreg2;
+}
 
+void SPI_DeInit(SPI_RegDef_t *pSPIx)
+{
+	if (pSPIx == SPI1)
+	{
+		RCC->APB2RSTR |= (1 << 12);
+		RCC->APB2RSTR &= ~(1 << 12);
+	}
+	else if (pSPIx == SPI2)
+	{
+		RCC->APB1RSTR |= (1 << 14);
+		RCC->APB1RSTR &= ~(1 << 14);
+	}
 }
