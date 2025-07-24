@@ -6,6 +6,9 @@
  */
 
 #include "stm32f103xx_spi_driver.h"
+#include "stm32f103xx_gpio_driver.h"
+
+static void SPI_GPIO_Config(SPI_Handle_t *pSPIHandle);
 
 void SPI_PeriClockControl(SPI_Handle_t *pSPIHandle, uint8_t EnOrDi)
 {
@@ -76,6 +79,8 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 	}
 
 	pSPIHandle->pSPIx->CR2 = tempreg2;
+
+	SPI_GPIO_Config(pSPIHandle);
 }
 
 void SPI_DeInit(SPI_RegDef_t *pSPIx)
@@ -89,5 +94,64 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
 	{
 		RCC->APB1RSTR |= (1 << 14);
 		RCC->APB1RSTR &= ~(1 << 14);
+	}
+}
+
+/**
+ * @brief  Configures the GPIO pins used for SPI functionality.
+ *
+ * This function configures the appropriate GPIO pins in alternate function
+ * push-pull mode or input mode based on SPI peripheral instance and configuration.
+ *
+ * @param[in] pSPIHandle Pointer to SPI handle structure.
+ *
+ * @note  This function assumes standard pin mapping:
+ *        - SPI1: PA5 (SCK), PA6 (MISO), PA7 (MOSI)
+ *        - SPI2: PB13 (SCK), PB14 (MISO), PB15 (MOSI)
+ *
+ * @return None
+ */
+static void SPI_GPIO_Config(SPI_Handle_t *pSPIHandle)
+{
+	GPIO_Handle_t SPIPins;
+
+	if (pSPIHandle->pSPIx == SPI1)
+	{
+// SCK
+		SPIPins.pGPIOx = GPIOA;
+		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_5;
+		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_AF_PP;
+		SPIPins.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_LOW;
+		GPIO_Init(&SPIPins);
+
+// MISO
+		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_6;
+		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_INPUT;
+		GPIO_Init(&SPIPins);
+
+// MOSI
+		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_7;
+		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_AF_PP;
+		GPIO_Init(&SPIPins);
+	}
+	else if (pSPIHandle->pSPIx == SPI2)
+	{
+		SPIPins.pGPIOx = GPIOB;
+		SPIPins.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_LOW;
+
+// SCK
+		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_13;
+		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_AF_PP;
+		GPIO_Init(&SPIPins);
+
+// MISO
+		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_14;
+		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_INPUT;
+		GPIO_Init(&SPIPins);
+
+// MOSI
+		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_15;
+		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_AF_PP;
+		GPIO_Init(&SPIPins);
 	}
 }
