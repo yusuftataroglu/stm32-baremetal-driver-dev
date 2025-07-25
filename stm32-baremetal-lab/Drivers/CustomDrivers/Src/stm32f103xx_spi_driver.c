@@ -154,7 +154,7 @@ void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t len)
 		}
 		else// 8-bit DFF
 		{
-//			pSPIx->DR = 0xFF;
+			pSPIx->DR = 0xFF;
 
 			while (!(pSPIx->SR & (1 << 0)));
 

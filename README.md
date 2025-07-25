@@ -12,3 +12,4 @@ Bu repo, STM32F103RB için sıfırdan sürücü yazımı ve bare-metal uygulamal
 | 004  | [Button Interrupt](stm32-baremetal-lab/Experiments/004_Button_Interrupt)               | Toggle onboard LED when button (PC13) interrupt occurs (EXTI15_10)                |
 | 005  | [Interrupt Priority](stm32-baremetal-lab/Experiments/005_Interrupt_Priority)           | Demonstrates NVIC interrupt preemption by assigning priorities                    |
 | 006  | [SPI Led Shift Register](stm32-baremetal-lab/Experiments/006_SPI_LED_ShiftRegister)    | Sending data via SPI to 74HC595 shift register to toggle Leds given pattern       |
+| 007  | [SPI Loopback RX](stm32-baremetal-lab/Experiments/007_SPI_Loopback_RX)                 | Verifies SPI TX and RX using loopback by connecting MOSI to MISO (no slave used)  |
