@@ -56,6 +56,15 @@
 #define I2C2_BASEADDR			(APB1PERIPH_BASEADDR + 0x5800U)
 //...
 
+/************************************* SPI Related Flag Definitions *************************************/
+#define SPI_FLAG_TXE     (1 << 1)   /*!< Transmit buffer empty flag */
+#define SPI_FLAG_RXNE    (1 << 0)   /*!< Receive buffer not empty flag */
+#define SPI_FLAG_BSY     (1 << 7)   /*!< Busy flag */
+#define SPI_FLAG_OVR     (1 << 6)   /*!< Overrun flag */
+#define SPI_FLAG_MODF    (1 << 5)   /*!< Mode fault flag */
+#define SPI_FLAG_CRCERR  (1 << 4)   /*!< CRC error flag */
+
+
 /****************************** PERIPHERAL REGISTER STRUCTURE DEFINITIONS ******************************/
 
 /********************************** RCC REGISTER STRUCTURE DEFINITION **********************************

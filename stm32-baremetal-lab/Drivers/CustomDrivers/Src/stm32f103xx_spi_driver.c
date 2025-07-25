@@ -235,3 +235,11 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t enOrDi)
 	}
 }
 
+uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t flagName)
+{
+    if (pSPIx->SR & flagName)
+    {
+        return 1;
+    }
+    return 0;
+}
