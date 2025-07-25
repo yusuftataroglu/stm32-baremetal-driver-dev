@@ -11,7 +11,7 @@ RM := rm -rf
 -include sources.mk
 -include Startup/subdir.mk
 -include Src/subdir.mk
--include Experiments/006_SPI_LED_ShiftRegister/subdir.mk
+-include Experiments/007_SPI_Loopback_RX/subdir.mk
 -include Drivers/CustomDrivers/Src/subdir.mk
 -include objects.mk
 
