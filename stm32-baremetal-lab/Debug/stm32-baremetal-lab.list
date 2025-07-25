@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  00001af0  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000013df  00000000  00000000  00001b19  2**0
+ 12 .debug_info   0000141d  00000000  00000000  00001b19  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000047b  00000000  00000000  00002ef8  2**0
+ 13 .debug_abbrev 0000047c  00000000  00000000  00002f36  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000118  00000000  00000000  00003378  2**3
+ 14 .debug_aranges 00000120  00000000  00000000  000033b8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 000000c7  00000000  00000000  00003490  2**0
+ 15 .debug_rnglists 000000ce  00000000  00000000  000034d8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_line   00000fa9  00000000  00000000  00003557  2**0
+ 16 .debug_line   00001037  00000000  00000000  000035a6  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_str    00000957  00000000  00000000  00004500  2**0
+ 17 .debug_str    00000971  00000000  00000000  000045dd  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .comment      00000043  00000000  00000000  00004e57  2**0
+ 18 .comment      00000043  00000000  00000000  00004f4e  2**0
                   CONTENTS, READONLY
- 19 .debug_frame  00000390  00000000  00000000  00004e9c  2**2
+ 19 .debug_frame  000003b8  00000000  00000000  00004f94  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_line_str 00000088  00000000  00000000  0000522c  2**0
+ 20 .debug_line_str 00000088  00000000  00000000  0000534c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1157,7 +1157,7 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
  80007b0:	2b01      	cmp	r3, #1
  80007b2:	d103      	bne.n	80007bc <SPI_Init+0xa8>
 	{
-	    tempreg |= (1 << 8);
+		tempreg |= (1 << 8);
  80007b4:	68fb      	ldr	r3, [r7, #12]
  80007b6:	f443 7380 	orr.w	r3, r3, #256	@ 0x100
  80007ba:	60fb      	str	r3, [r7, #12]

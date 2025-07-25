@@ -74,7 +74,7 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 // 9. Configure internal slave select bit
 	if (pSPIHandle->SPI_Config.SPI_SSM == SPI_SSM_ENABLED)
 	{
-	    tempreg |= (1 << 8);
+		tempreg |= (1 << 8);
 	}
 
 // Write the final CR1 value
@@ -129,6 +129,42 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t len)
 			len--;
 		}
 	}
+}
+
+void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t len)
+{
+	while (len > 0)
+	{
+// 1. Wait until TXE is set (Transmit buffer empty)
+		while (!(pSPIx->SR & (1 << 1)));
+
+		if (pSPIx->CR1 & (1 << 11))// 16-bit DFF
+		{
+// 2. Send dummy byte to generate clock and receive data
+			pSPIx->DR = 0xFFFF;
+
+// 3. Wait until RXNE is set (Receive buffer not empty)
+			while (!(pSPIx->SR & (1 << 0)));
+
+// 4. Read received data from DR
+			*((uint16_t*) pRxBuffer) = pSPIx->DR;
+
+			pRxBuffer += 2;
+			len -= 2;
+		}
+		else// 8-bit DFF
+		{
+			pSPIx->DR = 0xFF;
+
+			while (!(pSPIx->SR & (1 << 0)));
+
+			*pRxBuffer = pSPIx->DR;
+
+			pRxBuffer++;
+			len--;
+		}
+	}
+
 }
 
 /**
