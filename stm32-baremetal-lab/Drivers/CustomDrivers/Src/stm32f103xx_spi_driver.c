@@ -10,9 +10,9 @@
 
 static void SPI_GPIO_Config(SPI_Handle_t *pSPIHandle);
 
-void SPI_PeriClockControl(SPI_Handle_t *pSPIHandle, uint8_t EnOrDi)
+void SPI_PeriClockControl(SPI_Handle_t *pSPIHandle, uint8_t enOrDi)
 {
-	if (EnOrDi == ENABLE)
+	if (enOrDi == ENABLE)
 	{
 		if (pSPIHandle->pSPIx == SPI1)
 			SPI1_PCLK_EN();
@@ -30,12 +30,15 @@ void SPI_PeriClockControl(SPI_Handle_t *pSPIHandle, uint8_t EnOrDi)
 
 void SPI_Init(SPI_Handle_t *pSPIHandle)
 {
+// 1. Enable clock for SPI peripheral
+	SPI_PeriClockControl(pSPIHandle, ENABLE);
+
 	uint32_t tempreg = 0;
 
-// 1. Configure device mode (Master/Slave)
+// 2. Configure device mode (Master/Slave)
 	tempreg |= pSPIHandle->SPI_Config.SPI_DeviceMode << 2;
 
-// 2. Configure bus configuration
+// 3. Configure bus configuration
 	if (pSPIHandle->SPI_Config.SPI_BusConfig == SPI_BUS_FULL_DUPLEX)
 	{
 // Clear BIDIMODE (bit 15) for full-duplex
@@ -53,20 +56,26 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
 		tempreg |= (1 << 10);
 	}
 
-// 3. Configure SPI clock speed (baud rate control BR[2:0])
+// 4. Configure SPI clock speed (baud rate control BR[2:0])
 	tempreg |= (pSPIHandle->SPI_Config.SPI_SclkSpeed << 3);
 
-// 4. Configure DFF (data frame format)
+// 5. Configure DFF (data frame format)
 	tempreg |= (pSPIHandle->SPI_Config.SPI_DFF << 11);
 
-// 5. Configure CPOL
+// 6. Configure CPOL
 	tempreg |= (pSPIHandle->SPI_Config.SPI_CPOL << 1);
 
-// 6. Configure CPHA
+// 7. Configure CPHA
 	tempreg |= (pSPIHandle->SPI_Config.SPI_CPHA << 0);
 
-// 7. Configure software slave management (SSM)
+// 8. Configure software slave management (SSM)
 	tempreg |= (pSPIHandle->SPI_Config.SPI_SSM << 9);
+
+// 9. Configure internal slave select bit
+	if (pSPIHandle->SPI_Config.SPI_SSM == SPI_SSM_ENABLED)
+	{
+	    tempreg |= (1 << 8);
+	}
 
 // Write the final CR1 value
 	pSPIHandle->pSPIx->CR1 = tempreg;
@@ -101,20 +110,20 @@ void SPI_SendData(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t len)
 {
 	while (len > 0)
 	{
-		// Wait until TXE (Transmit buffer empty) is set
+// Wait until TXE (Transmit buffer empty) is set
 		while (!(pSPIx->SR & (1 << 1)));
 
-		// Check DFF (data frame format)
+// Check DFF (data frame format)
 		if (pSPIx->CR1 & (1 << 11))
 		{
-			// 16-bit DFF
-			pSPIx->DR = *((uint16_t*)pTxBuffer);
+// 16-bit DFF
+			pSPIx->DR = *((uint16_t*) pTxBuffer);
 			pTxBuffer += 2;
 			len -= 2;
 		}
 		else
 		{
-			// 8-bit DFF
+// 8-bit DFF
 			pSPIx->DR = *pTxBuffer;
 			pTxBuffer++;
 			len--;
@@ -146,37 +155,47 @@ static void SPI_GPIO_Config(SPI_Handle_t *pSPIHandle)
 		SPIPins.pGPIOx = GPIOA;
 		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_5;
 		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_AF_PP;
-		SPIPins.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_LOW;
+		SPIPins.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_MEDIUM;
 		GPIO_Init(&SPIPins);
 
 // MISO
 		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_6;
-		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_INPUT;
 		GPIO_Init(&SPIPins);
 
 // MOSI
 		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_7;
-		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_AF_PP;
 		GPIO_Init(&SPIPins);
 	}
 	else if (pSPIHandle->pSPIx == SPI2)
 	{
-		SPIPins.pGPIOx = GPIOB;
-		SPIPins.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_LOW;
-
 // SCK
+		SPIPins.pGPIOx = GPIOB;
 		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_13;
 		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_AF_PP;
+		SPIPins.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_MEDIUM;
 		GPIO_Init(&SPIPins);
 
 // MISO
 		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_14;
-		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_INPUT;
 		GPIO_Init(&SPIPins);
 
 // MOSI
 		SPIPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_15;
-		SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_AF_PP;
 		GPIO_Init(&SPIPins);
 	}
 }
+
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t enOrDi)
+{
+	if (enOrDi == ENABLE)
+	{
+// Enable SPE bit
+		pSPIx->CR1 |= (1 << 6);
+	}
+	else
+	{
+// Disable SPE bit
+		pSPIx->CR1 &= ~(1 << 6);
+	}
+}
+

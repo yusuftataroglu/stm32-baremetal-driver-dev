@@ -1,5 +1,6 @@
 ../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:13:6:SPI_PeriClockControl	6
-../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:31:6:SPI_Init	5
-../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:86:6:SPI_DeInit	3
-../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:100:6:SPI_SendData	4
-../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:139:13:SPI_GPIO_Config	3
+../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:31:6:SPI_Init	6
+../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:95:6:SPI_DeInit	3
+../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:109:6:SPI_SendData	4
+../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:148:13:SPI_GPIO_Config	3
+../Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.c:188:6:SPI_PeripheralControl	2

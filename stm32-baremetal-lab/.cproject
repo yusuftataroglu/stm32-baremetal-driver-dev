@@ -80,7 +80,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry excluding="004_Button_Interrupt/main.c|003_Multiple_Leds/main.c|002_Button_Input/main.c|001_Led_Toggle/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Experiments"/>
+						<entry excluding="005_Interrupt_Priority/main.c|004_Button_Interrupt/main.c|003_Multiple_Leds/main.c|002_Button_Input/main.c|001_Led_Toggle/main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Experiments"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Inc"/>
 						<entry excluding="main.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Startup"/>

@@ -110,7 +110,7 @@ typedef struct
  *
  * @return None
  */
-void SPI_PeriClockControl(SPI_Handle_t *pSPIHandle, uint8_t EnOrDi);
+void SPI_PeriClockControl(SPI_Handle_t *pSPIHandle, uint8_t enOrDi);
 
 /**
  * @brief  Initializes the given SPI peripheral with specified configurations.
@@ -168,12 +168,14 @@ void SPI_ReceiveData(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t len);
  *
  * Sets or clears the SPE (SPI Enable) bit in the CR1 register.
  *
+ * @note This bit must be enabled before communication.
+ *
  * @param[in] pSPIx  Base address of the SPI peripheral.
  * @param[in] EnOrDi ENABLE to activate, DISABLE to deactivate the SPI.
  *
  * @return None
  */
-void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
+void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t enOrDi);
 
 /**
  * @brief  Checks the status of a specific SPI flag.
@@ -185,7 +187,7 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t EnOrDi);
  *
  * @return Flag status: SET or RESET.
  */
-uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName);
+uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t flagName);
 
 
 #endif /* CUSTOMDRIVERS_INC_STM32F103XX_SPI_DRIVER_H_ */
