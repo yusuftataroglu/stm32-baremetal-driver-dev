@@ -31,6 +31,6 @@ Bu depo hem kişisel bir öğrenme arşivi hem de profesyonel bir portföy çal�
 | 005  | [Interrupt Priority](stm32-baremetal-lab/Experiments/005_Interrupt_Priority)           | Demonstrates NVIC preemption with different interrupt priority levels                             |
 | 006  | [SPI LED Shift Register](stm32-baremetal-lab/Experiments/006_SPI_LED_ShiftRegister)    | Control LEDs through SPI using 74HC595 shift register                                             |
 | 007  | [SPI Loopback RX](stm32-baremetal-lab/Experiments/007_SPI_Loopback_RX)                 | Test SPI transmit and receive in full-duplex mode with MISO-MOSI loopback                         |
-| 007  | [SPI IT Loopback](stm32-baremetal-lab/Experiments/008_SPI_IT_Loopback)                 | Full-duplex SPI communication using interrupts, tested with loopback wiring and LED indicators.   |
+| 008  | [SPI IT Loopback](stm32-baremetal-lab/Experiments/008_SPI_IT_Loopback)                 | Full-duplex SPI communication using interrupts, tested with loopback wiring and LED indicators.   |
 
 ---
