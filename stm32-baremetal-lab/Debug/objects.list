@@ -1,7 +1,7 @@
 "./Drivers/CustomDrivers/Src/core_nvic.o"
 "./Drivers/CustomDrivers/Src/stm32f103xx_gpio_driver.o"
 "./Drivers/CustomDrivers/Src/stm32f103xx_spi_driver.o"
-"./Experiments/007_SPI_Loopback_RX/main.o"
+"./Experiments/008_SPI_IT_Loopback/main.o"
 "./Src/syscalls.o"
 "./Src/sysmem.o"
 "./Startup/startup_stm32f103rbtx.o"

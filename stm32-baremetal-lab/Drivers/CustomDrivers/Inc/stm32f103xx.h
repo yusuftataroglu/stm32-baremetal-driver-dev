@@ -16,6 +16,7 @@
 #define CUSTOMDRIVERS_INC_STM32F103XX_H_
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define __vo    	volatile
 #define ENABLE		1
@@ -57,13 +58,27 @@
 //...
 
 /************************************* SPI Related Flag Definitions *************************************/
-#define SPI_FLAG_TXE     (1 << 1)   /*!< Transmit buffer empty flag */
 #define SPI_FLAG_RXNE    (1 << 0)   /*!< Receive buffer not empty flag */
-#define SPI_FLAG_BSY     (1 << 7)   /*!< Busy flag */
-#define SPI_FLAG_OVR     (1 << 6)   /*!< Overrun flag */
-#define SPI_FLAG_MODF    (1 << 5)   /*!< Mode fault flag */
+#define SPI_FLAG_TXE     (1 << 1)   /*!< Transmit buffer empty flag */
 #define SPI_FLAG_CRCERR  (1 << 4)   /*!< CRC error flag */
+#define SPI_FLAG_MODF    (1 << 5)   /*!< Mode fault flag */
+#define SPI_FLAG_OVR     (1 << 6)   /*!< Overrun flag */
+#define SPI_FLAG_BSY     (1 << 7)   /*!< Busy flag */
 
+/************************************* SPI CR2 Interrupt Enable Bits *************************************/
+#define SPI_CR2_ERRIE   (1 << 5)  /*!< Error interrupt enable */
+#define SPI_CR2_RXNEIE  (1 << 6)  /*!< RX buffer not empty interrupt enable */
+#define SPI_CR2_TXEIE   (1 << 7)  /*!< TX buffer empty interrupt enable */
+
+/************************************* SPI States *************************************/
+#define SPI_READY       	0
+#define SPI_BUSY_IN_RX  	1
+#define SPI_BUSY_IN_TX  	2
+
+/********************************* SPI Application Event Callback Definitions *********************************/
+#define SPI_EVENT_TX_CMPLT		0
+#define SPI_EVENT_RX_CMPLT 		1
+#define SPI_EVENT_OVR_ERR		2
 
 /****************************** PERIPHERAL REGISTER STRUCTURE DEFINITIONS ******************************/
 

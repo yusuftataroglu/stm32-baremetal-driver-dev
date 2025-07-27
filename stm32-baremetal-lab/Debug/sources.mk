@@ -23,7 +23,7 @@ C_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 Drivers/CustomDrivers/Src \
-Experiments/007_SPI_Loopback_RX \
+Experiments/008_SPI_IT_Loopback \
 Src \
 Startup \
 

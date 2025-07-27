@@ -93,6 +93,12 @@ typedef struct
 {
 	SPI_RegDef_t *pSPIx; /*!< Base address of the SPI peripheral */
 	SPI_Config_t SPI_Config; /*!< SPI configuration settings */
+	uint8_t *pTxBuffer; /*!< Pointer to the transmission buffer.*/
+	uint8_t *pRxBuffer; /*!< Pointer to the reception buffer.*/
+	uint32_t TxLen; /*!< Length of data to transmit in bytes.*/
+	uint32_t RxLen; /*!< Length of data to receive in bytes.*/
+	uint8_t TxState; /*!< State of SPI which is checked before transmit data.*/
+	uint8_t RxState; /*!< State of SPI which is checked before receive data*/
 } SPI_Handle_t;
 
 /*********************************************************************************************
@@ -189,5 +195,76 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t enOrDi);
  */
 uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t flagName);
 
+/**
+ * @brief  Handles all SPI-related interrupt events.
+ *
+ * This function processes interrupt requests triggered by the SPI peripheral. It checks the
+ * status and control bits of relevant flags (TXE, RXNE, OVR) and delegates the handling to
+ * appropriate sub-functions based on the current mode of operation (transmit, receive, or
+ * full-duplex).
+ *
+ * The handler performs the following:
+ * - Checks if the Transmit Buffer Empty (TXE) interrupt is enabled and pending, and invokes
+ *   the internal transmit ISR handler to continue sending remaining data.
+ * - Checks if the Receive Buffer Not Empty (RXNE) interrupt is enabled and pending, and invokes
+ *   the internal receive ISR handler to read incoming data into the user buffer.
+ * - Checks for Overrun Error (OVR) condition, and if detected, invokes the internal OVR handler
+ *   to clear the error by reading the SR and DR registers.
+ *
+ * This function should be called from the user-defined IRQ handler (e.g., SPI1_IRQHandler) and
+ * requires the SPI handle to access the associated transmit and receive buffer context.
+ *
+ * @param[in] pSPIHandle Pointer to the SPI handle structure containing the peripheral base address
+ *                       and transfer state information.
+ *
+ * @note This handler is interrupt-safe and only processes events when the corresponding interrupt
+ *       enable bits are set in the CR2 register. It does not perform any blocking operations.
+ *
+ * @return None.
+ */
+void SPI_IRQHandling(SPI_Handle_t *pSPIHandle);
+
+/**
+ * @brief  Initiates transmission of data over SPI using interrupt mode.
+ *
+ * Stores the transmission buffer and length inside the SPI handle and enables
+ * the TXEIE (TX buffer empty interrupt) to trigger interrupt-driven data transfer.
+ *
+ * @param[in] pSPIHandle Pointer to the SPI handle structure.
+ * @param[in] pTxBuffer  Pointer to the transmission buffer.
+ * @param[in] len        Number of bytes to transmit.
+ *
+ * @return Transmission state: 1 = busy in TX, 0 = ready.
+ */
+uint8_t SPI_SendData_IT(SPI_Handle_t *pSPIHandle, uint8_t *pTxBuffer, uint32_t len);
+
+/**
+ * @brief  Initiates SPI data reception using interrupt mode.
+ *
+ * Configures the SPI peripheral to receive data asynchronously using RXNE interrupt.
+ * The actual data handling will be performed inside the SPI interrupt handler.
+ *
+ * @param[in] pSPIHandle Pointer to the SPI handle structure.
+ * @param[in] pRxBuffer  Pointer to the buffer where received data will be stored.
+ * @param[in] len        Number of bytes to receive.
+ *
+ * @return  SPI status: SPI_READY if reception started successfully,
+ *                      SPI_BUSY_IN_RX if SPI is already receiving.
+ */
+uint8_t SPI_ReceiveData_IT(SPI_Handle_t *pSPIHandle, uint8_t *pRxBuffer, uint32_t len);
+
+/**
+ * @brief  SPI application event callback (weak implementation).
+ *
+ * This function is called by the SPI driver to notify the application about events.
+ * The user application may override this function to handle specific SPI events.
+ *
+ * @param[in] pSPIHandle Pointer to the SPI handle.
+ * @param[in] AppEv      Event identifier.
+ *                        - SPI_EVENT_TX_CMPLT
+ *                        - SPI_EVENT_RX_CMPLT
+ *                        - SPI_EVENT_OVR_ERR
+ */
+void SPI_ApplicationEventCallback(SPI_Handle_t *pSPIHandle, uint8_t AppEv);
 
 #endif /* CUSTOMDRIVERS_INC_STM32F103XX_SPI_DRIVER_H_ */
