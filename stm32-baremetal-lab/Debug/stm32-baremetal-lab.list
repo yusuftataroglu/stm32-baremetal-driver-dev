@@ -1471,7 +1471,7 @@ void SPI_PeripheralControl(SPI_RegDef_t *pSPIx, uint8_t enOrDi)
 
 0800098e <SPI_IRQHandling>:
 	}
-	return 0;
+	return FLAG_RESET;
 }
 
 void SPI_IRQHandling(SPI_Handle_t *pSPIHandle)
