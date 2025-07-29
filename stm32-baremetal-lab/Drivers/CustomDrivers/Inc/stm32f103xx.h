@@ -21,6 +21,8 @@
 #define __vo    	volatile
 #define ENABLE		1
 #define DISABLE 	0
+#define FLAG_SET 	1
+#define FLAG_RESET 	0
 
 /********************************** BASE ADDRESSES OF FLASH AND SRAM **********************************/
 #define FLASH_BASEADDR          0x08000000U
@@ -79,6 +81,30 @@
 #define SPI_EVENT_TX_CMPLT		0
 #define SPI_EVENT_RX_CMPLT 		1
 #define SPI_EVENT_OVR_ERR		2
+
+/********************************** I2C_CR1 Register Bit Positions **********************************/
+#define I2C_CR1_PE               0  // Peripheral Enable
+#define I2C_CR1_SMBUS            1  // SMBus Mode
+#define I2C_CR1_SMBTYPE          3  // SMBus Type
+#define I2C_CR1_ENARP            4  // ARP Enable
+#define I2C_CR1_ENPEC            5  // PEC Enable
+#define I2C_CR1_ENGC             6  // General Call Enable
+#define I2C_CR1_NOSTRETCH        7  // Clock Stretching Disable (Slave mode)
+#define I2C_CR1_START            8  // Start Generation
+#define I2C_CR1_STOP             9  // Stop Generation
+#define I2C_CR1_ACK              10 // Acknowledge Enable
+#define I2C_CR1_POS              11 // Acknowledge/PEC Position (for data reception)
+#define I2C_CR1_PEC              12 // Packet Error Checking Register
+#define I2C_CR1_ALERT            13 // SMBus Alert
+#define I2C_CR1_SWRST            15 // Software Reset
+
+/********************************** I2C_CR2 Register Bit Positions **********************************/
+#define I2C_CR2_FREQ             0  // Peripheral Clock Frequency [5:0]
+#define I2C_CR2_ITERREN          8  // Error Interrupt Enable
+#define I2C_CR2_ITEVTEN          9  // Event Interrupt Enable
+#define I2C_CR2_ITBUFEN          10 // Buffer Interrupt Enable
+#define I2C_CR2_DMAEN            11 // DMA Requests Enable
+#define I2C_CR2_LAST             12 // DMA Last Transfer
 
 /****************************** PERIPHERAL REGISTER STRUCTURE DEFINITIONS ******************************/
 
@@ -182,6 +208,34 @@ typedef struct
 	 Sets the prescaler value for I2S clock generation. */
 } SPI_RegDef_t;
 
+/********************************** I2C REGISTER STRUCTURE DEFINITION **********************************
+ * Base Addresses:
+ *    I2C1: 0x40005400 (APB1PERIPH_BASEADDR + 0x5400)
+ *    I2C2: 0x40005800 (APB1PERIPH_BASEADDR + 0x5800)
+ * Reference Manual: RM0008, Section 26 (Inter-integrated circuit interface - I2C)
+ *******************************************************************************************************/
+typedef struct
+{
+	__vo uint32_t CR1; /*!< Control Register 1,                        Address offset: 0x00
+	 Enables the peripheral, generates start/stop conditions, sets ACK, etc. */
+	__vo uint32_t CR2; /*!< Control Register 2,                        Address offset: 0x04
+	 Configures peripheral clock frequency, and enables interrupts and DMA. */
+	__vo uint32_t OAR1; /*!< Own Address Register 1,                    Address offset: 0x08
+	 Holds the device’s primary own address (7-bit or 10-bit). */
+	__vo uint32_t OAR2; /*!< Own Address Register 2,                    Address offset: 0x0C
+	 Holds secondary own address and dual addressing settings. */
+	__vo uint32_t DR; /*!< Data Register,                             Address offset: 0x10
+	 Used to transmit or receive 8-bit data to/from the bus. */
+	__vo uint32_t SR1; /*!< Status Register 1,                         Address offset: 0x14
+	 Contains real-time flags for events like TXE, RXNE, STOPF, BTF, etc. */
+	__vo uint32_t SR2; /*!< Status Register 2,                         Address offset: 0x18
+	 Contains bus state info: busy flag, master/slave mode, etc. */
+	__vo uint32_t CCR; /*!< Clock Control Register,                    Address offset: 0x1C
+	 Defines the clock rate for standard or fast mode operation. */
+	__vo uint32_t TRISE; /*!< TRISE Register,                            Address offset: 0x20
+	 Sets the maximum rise time of the I2C signal to comply with specs. */
+} I2C_RegDef_t;
+
 /************************************** PERIPHERAL REGISTERS **************************************/
 #define GPIOA 	((GPIO_RegDef_t*) GPIOA_BASEADDR)
 #define GPIOB   ((GPIO_RegDef_t*) GPIOB_BASEADDR)
@@ -191,6 +245,8 @@ typedef struct
 #define EXTI    ((EXTI_RegDef_t*) EXTI_BASEADDR)
 #define SPI1	((SPI_RegDef_t*) SPI1_BASEADDR)
 #define SPI2	((SPI_RegDef_t*) SPI2_BASEADDR)
+#define I2C1    ((I2C_RegDef_t*) I2C1_BASEADDR)
+#define I2C2    ((I2C_RegDef_t*) I2C2_BASEADDR)
 
 /******************************** RCC PERIPHERAL CLOCK ENABLE MACROS ********************************/
 #define GPIOA_PCLK_EN()     (RCC->APB2ENR |= (1 << 2))   /* Enable clock for GPIOA */
