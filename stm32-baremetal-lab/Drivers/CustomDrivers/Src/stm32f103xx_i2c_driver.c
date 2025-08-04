@@ -101,6 +101,47 @@ void I2C_Init(I2C_Handle_t *pI2CHandle)
 	pI2CHandle->pI2Cx->TRISE = (temp & 0x3F);
 }
 
+void I2C_MasterSendData(I2C_Handle_t *pI2CHandle, uint8_t *pTxBuffer,
+                        uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart)
+{
+    // 1. Generate START condition
+    pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_START);
+
+    // 2. Wait until SB is set
+    while (! (pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_SB)));
+
+    // 3. Send address with write bit (0)
+    slaveAddr = slaveAddr << 1; // LSB = 0 -> write
+    pI2CHandle->pI2Cx->DR = slaveAddr;
+
+    // 4. Wait until ADDR is set
+    while (! (pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_ADDR)));
+
+    // 5. Clear ADDR flag by reading SR1 and SR2
+    (void)pI2CHandle->pI2Cx->SR1;
+    (void)pI2CHandle->pI2Cx->SR2;
+
+    // 6. Send data until Len becomes 0
+    while (len > 0)
+    {
+        while (! (pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_TXE))); // Wait TXE = 1
+
+        pI2CHandle->pI2Cx->DR = *pTxBuffer;
+        pTxBuffer++;
+        len--;
+    }
+
+    // 7. Wait for BTF = 1 (data transfer completed)
+    while (! (pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_BTF)));
+
+    // 8. Generate STOP condition if Sr is disabled (Sr = 0)
+    if (repeatedStart == 0)
+    {
+        pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_STOP);
+    }
+}
+
+
 void I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t enOrDi)
 {
 	if (enOrDi == ENABLE)
