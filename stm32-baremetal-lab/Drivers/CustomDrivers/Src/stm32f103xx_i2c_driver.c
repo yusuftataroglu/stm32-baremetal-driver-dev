@@ -101,46 +101,114 @@ void I2C_Init(I2C_Handle_t *pI2CHandle)
 	pI2CHandle->pI2Cx->TRISE = (temp & 0x3F);
 }
 
-void I2C_MasterSendData(I2C_Handle_t *pI2CHandle, uint8_t *pTxBuffer,
-                        uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart)
+void I2C_MasterSendData(I2C_Handle_t *pI2CHandle, uint8_t *pTxBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart)
 {
-    // 1. Generate START condition
-    pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_START);
+// 1. Generate START condition
+	pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_START);
 
-    // 2. Wait until SB is set
-    while (! (pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_SB)));
+// 2. Wait until SB is set
+	while (!(pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_SB)));
 
-    // 3. Send address with write bit (0)
-    slaveAddr = slaveAddr << 1; // LSB = 0 -> write
-    pI2CHandle->pI2Cx->DR = slaveAddr;
+// 3. Send address with write bit (0)
+	slaveAddr = slaveAddr << 1;// LSB = 0 -> write
+	pI2CHandle->pI2Cx->DR = slaveAddr;
 
-    // 4. Wait until ADDR is set
-    while (! (pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_ADDR)));
+// 4. Wait until ADDR is set
+	while (!(pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_ADDR)));
 
-    // 5. Clear ADDR flag by reading SR1 and SR2
-    (void)pI2CHandle->pI2Cx->SR1;
-    (void)pI2CHandle->pI2Cx->SR2;
+// 5. Clear ADDR flag by reading SR1 and SR2
+	(void) pI2CHandle->pI2Cx->SR1;
+	(void) pI2CHandle->pI2Cx->SR2;
 
-    // 6. Send data until Len becomes 0
-    while (len > 0)
-    {
-        while (! (pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_TXE))); // Wait TXE = 1
+// 6. Send data until Len becomes 0
+	while (len > 0)
+	{
+		while (!(pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_TXE)));// Wait TXE = 1
 
-        pI2CHandle->pI2Cx->DR = *pTxBuffer;
-        pTxBuffer++;
-        len--;
-    }
+		pI2CHandle->pI2Cx->DR = *pTxBuffer;
+		pTxBuffer++;
+		len--;
+	}
 
-    // 7. Wait for BTF = 1 (data transfer completed)
-    while (! (pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_BTF)));
+// 7. Wait for BTF = 1 (data transfer completed)
+	while (!(pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_BTF)));
 
-    // 8. Generate STOP condition if Sr is disabled (Sr = 0)
-    if (repeatedStart == 0)
-    {
-        pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_STOP);
-    }
+// 8. Generate STOP condition if Sr is disabled (Sr = 0)
+	if (repeatedStart == 0)
+	{
+		pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_STOP);
+	}
 }
 
+void I2C_MasterReceiveData(I2C_Handle_t *pI2CHandle, uint8_t *pRxBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart)
+{
+// 1. Generate START condition
+	pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_START);
+
+// 2. Wait until SB is set (start condition generated)
+	while (!(pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_SB)));
+
+// 3. Send address with Read bit (1)
+	slaveAddr = (slaveAddr << 1) | 1;
+	pI2CHandle->pI2Cx->DR = slaveAddr;
+
+// 4. Wait until ADDR flag is set
+	while (!(pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_ADDR)));
+
+// 5. Data reception logic based on number of bytes
+	if (len == 1)
+	{
+// Disable ACKing
+		pI2CHandle->pI2Cx->CR1 &= ~(1 << I2C_CR1_ACK);
+
+// Clear ADDR flag
+		(void) pI2CHandle->pI2Cx->SR1;
+		(void) pI2CHandle->pI2Cx->SR2;
+
+// Generate STOP if repeatedStart == 0
+		if (repeatedStart == 0)
+			pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_STOP);
+
+// Wait until RXNE = 1
+		while (!(pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_RXNE)));
+
+// Read data
+		*pRxBuffer = pI2CHandle->pI2Cx->DR;
+	}
+	else if (len > 1)
+	{
+// Enable ACK
+		pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_ACK);
+
+// Clear ADDR flag
+		(void) pI2CHandle->pI2Cx->SR1;
+		(void) pI2CHandle->pI2Cx->SR2;
+
+		while (len > 0)
+		{
+			if (len == 2)
+			{
+// Before receiving last 2 bytes, clear ACK and generate STOP if needed
+				pI2CHandle->pI2Cx->CR1 &= ~(1 << I2C_CR1_ACK);
+
+				if (repeatedStart == 0)
+					pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_STOP);
+			}
+
+// Wait until RXNE = 1
+			while (!(pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_RXNE)));
+
+// Read the data
+			*pRxBuffer = pI2CHandle->pI2Cx->DR;
+			pRxBuffer++;
+			len--;
+		}
+	}
+
+// Re-enable ACKing
+	if (pI2CHandle->I2C_Config.I2C_ACKControl == I2C_ACK_ENABLE)
+		pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_ACK);
+}
 
 void I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t enOrDi)
 {
