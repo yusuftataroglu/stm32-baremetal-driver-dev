@@ -72,10 +72,10 @@
 #define SPI_CR2_RXNEIE  (1 << 6)  /*!< RX buffer not empty interrupt enable */
 #define SPI_CR2_TXEIE   (1 << 7)  /*!< TX buffer empty interrupt enable */
 
-/************************************* SPI States *************************************/
-#define SPI_READY       	0
-#define SPI_BUSY_IN_RX  	1
-#define SPI_BUSY_IN_TX  	2
+/************************************* SPI Internal State Codes *************************************/
+#define SPI_READY       		0
+#define SPI_BUSY_IN_RX  		1
+#define SPI_BUSY_IN_TX  		2
 
 /********************************* SPI Application Event Callback Definitions *********************************/
 #define SPI_EVENT_TX_CMPLT		0
@@ -136,6 +136,15 @@
 #define I2C_CCR_CCR              0  /*!< Clock Control Bits [11:0] */
 #define I2C_CCR_DUTY             14 /*!< Fast Mode Duty Cycle */
 #define I2C_CCR_FS               15 /*!< I2C Master Mode Selection (0 = Standard Mode, 1 = Fast Mode) */
+
+/************************************* I2C Internal State Codes *************************************/
+#define I2C_READY       		0
+#define I2C_BUSY_IN_RX  		1
+#define I2C_BUSY_IN_TX  		2
+
+/************************************* I2C_API_ReturnCodes  *************************************/
+#define I2C_OK              	0
+#define I2C_ERROR_BUSY      	1
 
 /****************************** PERIPHERAL REGISTER STRUCTURE DEFINITIONS ******************************/
 

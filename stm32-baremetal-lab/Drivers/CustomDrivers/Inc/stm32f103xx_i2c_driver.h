@@ -68,16 +68,6 @@ typedef enum
     I2C_FM_DUTY_16_9        /*!< Tlow/Thigh = 16/9 */
 } I2C_FMDutyCycle_t;
 
-/********************************** @I2C_STATE **********************************
- * @brief Represents current I2C communication state.
- *******************************************************************************/
-typedef enum
-{
-    I2C_READY = 0U,
-    I2C_BUSY_IN_RX,
-    I2C_BUSY_IN_TX
-} I2C_State_t;
-
 /********************************** I2C HANDLE STRUCTURE **********************************
  * @brief Handle structure to manage I2C peripheral and associated configuration/state.
  *****************************************************************************************/

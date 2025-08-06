@@ -210,6 +210,50 @@ void I2C_MasterReceiveData(I2C_Handle_t *pI2CHandle, uint8_t *pRxBuffer, uint32_
 		pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_ACK);
 }
 
+uint8_t I2C_MasterSendDataIT(I2C_Handle_t *pI2CHandle, uint8_t *pTxBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart)
+{
+	if (pI2CHandle->TxRxState != I2C_READY)
+		return I2C_ERROR_BUSY;
+
+// Save transmission details to handle struct
+	pI2CHandle->pTxBuffer = pTxBuffer;
+	pI2CHandle->TxLen = len;
+	pI2CHandle->DevAddr = slaveAddr;
+	pI2CHandle->TxRxState = I2C_BUSY_IN_TX;
+	pI2CHandle->Sr = repeatedStart;
+
+// Generate START condition
+	pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_START);
+
+// Enable I2C event and error interrupts
+	pI2CHandle->pI2Cx->CR2 |= (1 << I2C_CR2_ITEVTEN);
+	pI2CHandle->pI2Cx->CR2 |= (1 << I2C_CR2_ITERREN);
+
+	return I2C_OK;
+}
+
+uint8_t I2C_MasterReceiveDataIT(I2C_Handle_t *pI2CHandle, uint8_t *pRxBuffer, uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart)
+{
+	if (pI2CHandle->TxRxState != I2C_READY)
+		return I2C_ERROR_BUSY;
+
+// Save transmission details to handle struct
+	pI2CHandle->pRxBuffer = pRxBuffer;
+	pI2CHandle->RxLen = len;
+	pI2CHandle->DevAddr = slaveAddr;
+	pI2CHandle->TxRxState = I2C_BUSY_IN_RX;
+	pI2CHandle->Sr = repeatedStart;
+
+// Generate START condition
+	pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_START);
+
+// Enable I2C event and error interrupts
+	pI2CHandle->pI2Cx->CR2 |= (1 << I2C_CR2_ITEVTEN);
+	pI2CHandle->pI2Cx->CR2 |= (1 << I2C_CR2_ITERREN);
+
+	return I2C_OK;
+}
+
 void I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t enOrDi)
 {
 	if (enOrDi == ENABLE)
