@@ -150,6 +150,10 @@
 #define I2C_EVENT_TX_CMPLT		0
 #define I2C_EVENT_RX_CMPLT 		1
 #define I2C_EVENT_OVR_ERR		2
+#define I2C_ERROR_BERR			3
+#define I2C_ERROR_ARLO			4
+#define I2C_ERROR_AF			5
+#define I2C_ERROR_OVR			6
 
 /****************************** PERIPHERAL REGISTER STRUCTURE DEFINITIONS ******************************/
 

@@ -172,14 +172,6 @@ uint8_t I2C_MasterReceiveDataIT(I2C_Handle_t *pI2CHandle, uint8_t *pRxBuffer,
                                 uint32_t len, uint8_t slaveAddr, uint8_t repeatedStart);
 
 /**
- * @brief Configures NVIC interrupt for given IRQ number.
- * @param[in] IRQNumber IRQ number for I2C peripheral.
- * @param[in] EnOrDi ENABLE or DISABLE macro.
- * @return None
- */
-void I2C_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnOrDi);
-
-/**
  * @brief Handles I2C event-related interrupts.
  * @param[in] pI2CHandle Pointer to the I2C handle structure.
  * @return None
@@ -208,14 +200,6 @@ void I2C_ApplicationEventCallback(I2C_Handle_t *pI2CHandle, uint8_t AppEv);
  * @return None
  */
 void I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t EnOrDi);
-
-/**
- * @brief Manages ACK bit during communication.
- * @param[in] pI2Cx Pointer to I2C peripheral.
- * @param[in] EnOrDi ENABLE or DISABLE macro.
- * @return None
- */
-void I2C_ManageAcking(I2C_RegDef_t *pI2Cx, uint8_t EnOrDi);
 
 /**
  * @brief Returns the status of a given I2C flag.
