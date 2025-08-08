@@ -146,6 +146,11 @@
 #define I2C_OK              	0
 #define I2C_ERROR_BUSY      	1
 
+/********************************* I2C Application Event Callback Definitions *********************************/
+#define I2C_EVENT_TX_CMPLT		0
+#define I2C_EVENT_RX_CMPLT 		1
+#define I2C_EVENT_OVR_ERR		2
+
 /****************************** PERIPHERAL REGISTER STRUCTURE DEFINITIONS ******************************/
 
 /********************************** RCC REGISTER STRUCTURE DEFINITION **********************************

@@ -4,5 +4,7 @@
 ../Drivers/CustomDrivers/Src/stm32f103xx_i2c_driver.c:143:6:I2C_MasterReceiveData	12
 ../Drivers/CustomDrivers/Src/stm32f103xx_i2c_driver.c:213:9:I2C_MasterSendDataIT	2
 ../Drivers/CustomDrivers/Src/stm32f103xx_i2c_driver.c:235:9:I2C_MasterReceiveDataIT	2
-../Drivers/CustomDrivers/Src/stm32f103xx_i2c_driver.c:257:6:I2C_PeripheralControl	2
-../Drivers/CustomDrivers/Src/stm32f103xx_i2c_driver.c:271:9:I2C_GetFlagStatus	2
+../Drivers/CustomDrivers/Src/stm32f103xx_i2c_driver.c:257:6:I2C_EV_IRQHandling	29
+../Drivers/CustomDrivers/Src/stm32f103xx_i2c_driver.c:403:6:I2C_PeripheralControl	2
+../Drivers/CustomDrivers/Src/stm32f103xx_i2c_driver.c:417:9:I2C_GetFlagStatus	2
+../Drivers/CustomDrivers/Src/stm32f103xx_i2c_driver.c:426:28:I2C_ApplicationEventCallback	1

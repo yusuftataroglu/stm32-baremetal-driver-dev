@@ -254,6 +254,152 @@ uint8_t I2C_MasterReceiveDataIT(I2C_Handle_t *pI2CHandle, uint8_t *pRxBuffer, ui
 	return I2C_OK;
 }
 
+void I2C_EV_IRQHandling(I2C_Handle_t *pI2CHandle)
+{
+    // Check which mode we are in
+    uint32_t temp1, temp2, temp3;
+
+    temp1 = pI2CHandle->pI2Cx->CR2 & (1 << I2C_CR2_ITEVTEN);
+    temp2 = pI2CHandle->pI2Cx->CR2 & (1 << I2C_CR2_ITBUFEN);
+
+    // Handle only master transmit
+    if (pI2CHandle->TxRxState == I2C_BUSY_IN_TX)
+    {
+        /** STEP 1: SB flag (Start bit) is set **/
+        temp3 = pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_SB);
+        if (temp1 && temp3)
+        {
+            // Send address with write (0)
+            uint8_t addr = (pI2CHandle->DevAddr << 1);
+            pI2CHandle->pI2Cx->DR = addr;
+        }
+
+        /** STEP 2: ADDR flag is set **/
+        temp3 = pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_ADDR);
+        if (temp1 && temp3)
+        {
+            // Clear ADDR flag by reading SR1 and SR2
+            temp3 = pI2CHandle->pI2Cx->SR1;
+            temp3 = pI2CHandle->pI2Cx->SR2;
+        }
+
+        /** STEP 3: TXE flag is set - Data register is empty **/
+        temp3 = pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_TXE);
+        if (temp1 && temp2 && temp3)
+        {
+            if (pI2CHandle->TxLen > 0)
+            {
+                // Load data into DR
+                pI2CHandle->pI2Cx->DR = *(pI2CHandle->pTxBuffer);
+                pI2CHandle->pTxBuffer++;
+                pI2CHandle->TxLen--;
+            }
+        }
+
+        /** STEP 4: BTF flag - Transfer finished, TXE also set **/
+        temp3 = pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_BTF);
+        if (temp1 && temp3 && (pI2CHandle->TxLen == 0))
+        {
+            // Close transmission
+            if (pI2CHandle->Sr == DISABLE)
+            {
+                // Generate STOP condition
+                pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_STOP);
+            }
+
+            // Reset handle values
+            pI2CHandle->TxRxState = I2C_READY;
+            pI2CHandle->pTxBuffer = NULL;
+            pI2CHandle->TxLen = 0;
+
+            // Disable interrupt bits
+            pI2CHandle->pI2Cx->CR2 &= ~(1 << I2C_CR2_ITEVTEN);
+            pI2CHandle->pI2Cx->CR2 &= ~(1 << I2C_CR2_ITBUFEN);
+
+            // Inform app
+            I2C_ApplicationEventCallback(pI2CHandle, I2C_EVENT_TX_CMPLT);
+        }
+    }
+    // Handle only master reception
+    else if (pI2CHandle->TxRxState == I2C_BUSY_IN_RX)
+    {
+        /** STEP 1: SB flag - Start condition generated **/
+        temp3 = pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_SB);
+        if (temp1 && temp3)
+        {
+            // Send address with read bit (1)
+            uint8_t addr = (pI2CHandle->DevAddr << 1) | 1;
+            pI2CHandle->pI2Cx->DR = addr;
+        }
+
+        /** STEP 2: ADDR flag - Address phase complete **/
+        temp3 = pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_ADDR);
+        if (temp1 && temp3)
+        {
+            // Special handling for 1 byte
+            if (pI2CHandle->RxLen == 1)
+            {
+                // Disable ACK
+                pI2CHandle->pI2Cx->CR1 &= ~(1 << I2C_CR1_ACK);
+
+                // Clear ADDR flag
+                temp3 = pI2CHandle->pI2Cx->SR1;
+                temp3 = pI2CHandle->pI2Cx->SR2;
+            }
+            else if (pI2CHandle->RxLen > 1)
+            {
+                // Clear ADDR flag
+                temp3 = pI2CHandle->pI2Cx->SR1;
+                temp3 = pI2CHandle->pI2Cx->SR2;
+            }
+        }
+
+        /** STEP 3: RXNE flag - Data received **/
+        temp3 = pI2CHandle->pI2Cx->SR1 & (1 << I2C_SR1_RXNE);
+        if (temp1 && temp2 && temp3)
+        {
+            if (pI2CHandle->RxLen == 1)
+            {
+                // Read data and close reception
+                *pI2CHandle->pRxBuffer = pI2CHandle->pI2Cx->DR;
+                pI2CHandle->RxLen--;
+
+                // Generate STOP if no repeated start
+                if (pI2CHandle->Sr == DISABLE)
+                    pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_STOP);
+
+                // Reset state
+                pI2CHandle->pRxBuffer = NULL;
+                pI2CHandle->TxRxState = I2C_READY;
+
+                // Disable interrupt bits
+                pI2CHandle->pI2Cx->CR2 &= ~(1 << I2C_CR2_ITEVTEN);
+                pI2CHandle->pI2Cx->CR2 &= ~(1 << I2C_CR2_ITBUFEN);
+
+                // Inform app
+                I2C_ApplicationEventCallback(pI2CHandle, I2C_EVENT_RX_CMPLT);
+            }
+            else if (pI2CHandle->RxLen > 1)
+            {
+                if (pI2CHandle->RxLen == 2)
+                {
+                    // Disable ACK
+                    pI2CHandle->pI2Cx->CR1 &= ~(1 << I2C_CR1_ACK);
+
+                    // Generate STOP if no repeated start
+                    if (pI2CHandle->Sr == DISABLE)
+                        pI2CHandle->pI2Cx->CR1 |= (1 << I2C_CR1_STOP);
+                }
+
+                // Read data
+                *pI2CHandle->pRxBuffer = pI2CHandle->pI2Cx->DR;
+                pI2CHandle->pRxBuffer++;
+                pI2CHandle->RxLen--;
+            }
+        }
+    }
+}
+
 void I2C_PeripheralControl(I2C_RegDef_t *pI2Cx, uint8_t enOrDi)
 {
 	if (enOrDi == ENABLE)
@@ -275,4 +421,9 @@ uint8_t I2C_GetFlagStatus(I2C_RegDef_t *pI2Cx, uint32_t flagName)
 		return FLAG_SET;
 	}
 	return FLAG_RESET;
+}
+
+__attribute__((weak)) void I2C_ApplicationEventCallback(I2C_Handle_t *pI2CHandle, uint8_t AppEv)
+{
+
 }
